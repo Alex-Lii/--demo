@@ -1,0 +1,263 @@
+/* ============================================================
+   版本 A｜严格照搬品牌规范
+   来源：brand-guidelines（Anthropic 官方品牌体系）
+   - 主色：Dark #141413 / Light #FAF9F5 / Mid Gray #B0AEA5 / Light Gray #E8E6DC
+   - 强调：Orange #D97757 / Blue #6A9BCC / Green #788C5D
+   - 字体：标题 Poppins（回退 Arial），正文 Lora（回退 Georgia）
+   - 规则：标题 ≥24pt(32px) 用 Poppins；非文字形状用强调色循环
+   覆盖：盏原有琥珀深色玻璃体系全部让位
+   ============================================================ */
+
+/* ---------- 色板：严格使用规范色值 ---------- */
+:root{
+  --bg:#FAF9F5;              /* Light */
+  --bg-deep:#E8E6DC;         /* Light Gray */
+  --ink-900:#141413;         /* Dark */
+  --ink-600:#3E3D38;         /* Dark 80%（规范未给正文灰，按 Dark 派生） */
+  --ink-400:#63625B;         /* 次级文字（不用 Mid Gray，理由见交付说明） */
+  --ink-300:#6F6E66;
+
+  --amber:#D97757;           /* 主强调橙 */
+  --amber-deep:#BF5F3F;
+  --amber-lift:#B0522F;      /* 浅底上的橙色文字（D97757 直接压米白只有 3.2:1） */
+  --amber-wash:rgba(217,119,87,.12);
+  --diy:#6A9BCC;             /* 二级强调蓝 */
+  --wine:#8E3B34;
+
+  /* 等级色让位为强调色循环（原语义色不再保留） */
+  --l1:#5C6E45;
+  --l2:#C05F3F;
+  --l3:#46719C;
+  --l4:#141413;
+
+  --serif:'Lora', Georgia, 'Songti SC', serif;
+  --sans:'Poppins', 'PingFang SC', Arial, sans-serif;
+
+  /* 玻璃参数全部失效 */
+  --glass-tint:transparent;
+  --glass-tint-strong:transparent;
+  --edge:rgba(20,20,19,.14);
+  --hi:transparent;
+  --lo:transparent;
+  --shadow:none;
+  --hairline:rgba(20,20,19,.12);
+}
+
+html,body{ background:#EFEDE5; color:var(--ink-900); }
+
+/* ---------- 页面：去掉环境光与深色，改平涂米白 ---------- */
+.frame{
+  color:var(--ink-900);
+  background:var(--bg);
+}
+.frame::after{ opacity:.025; mix-blend-mode:multiply; }
+
+.statusbar{ color:var(--ink-900); }
+.statusbar.light .time, .statusbar.light .sic{ color:#fff; }
+.homeind{ background:rgba(20,20,19,.32); }
+
+/* ---------- 排版：Poppins 标题 / Lora 正文 ---------- */
+.display{ font-family:var(--sans); font-size:32px; line-height:1.16; font-weight:600; letter-spacing:-.8px; }
+.h1{ font-family:var(--sans); font-size:22px; line-height:1.26; font-weight:600; letter-spacing:-.4px; }
+.h2{ font-family:var(--sans); font-size:15px; line-height:1.36; font-weight:600; letter-spacing:0; }
+.eyebrow{ font-family:var(--sans); font-size:10.5px; font-weight:600; letter-spacing:1.6px; color:var(--ink-400); }
+.body{ font-family:var(--serif); font-size:13px; line-height:1.58; color:var(--ink-600); }
+.caption{ font-family:var(--sans); font-size:11.5px; line-height:1.5; color:var(--ink-400); }
+.small{ font-family:var(--sans); font-size:11px; line-height:1.45; color:var(--ink-400); letter-spacing:.1px; }
+.drink-name{ font-family:var(--serif); font-weight:600; letter-spacing:.1px; }
+.statusbar .time, .num, .num *{ font-family:var(--sans); }
+
+/* ---------- 卡片：实底 + 1px 细线，取消玻璃 ---------- */
+.glass{
+  background-color:#FFFDF8 !important;
+  background-image:none !important;
+  -webkit-backdrop-filter:none !important;
+  backdrop-filter:none !important;
+  border:1px solid var(--edge) !important;
+  box-shadow:none !important;
+  border-radius:12px !important;
+  text-shadow:none !important;
+}
+.glass::before, .glass::after{ display:none !important; }
+.glass.on-photo{ background-color:rgba(250,249,245,.94) !important; }
+
+.icbtn{
+  background:#FFFDF8;
+  background-image:none;
+  -webkit-backdrop-filter:none; backdrop-filter:none;
+  border:1px solid rgba(20,20,19,.18);
+  border-radius:50%;
+  color:var(--ink-900);
+  box-shadow:none;
+}
+.icbtn.frost{
+  background:rgba(20,20,19,.55);
+  border-color:rgba(250,249,245,.30);
+  color:#FAF9F5;
+}
+
+/* ---------- 按钮：方一点，强调橙 + 深色字 ---------- */
+.btn{
+  border-radius:10px !important;
+  font-family:var(--sans);
+  font-size:14px; font-weight:600; letter-spacing:0;
+}
+.btn.primary{
+  background:#D97757;
+  color:#141413;
+  box-shadow:none;
+}
+.btn.secondary{
+  background:#FFFDF8;
+  -webkit-backdrop-filter:none; backdrop-filter:none;
+  border:1px solid rgba(20,20,19,.18);
+  color:var(--ink-900);
+  box-shadow:none;
+}
+.btn-outline-amber{
+  height:30px; border-radius:6px;
+  border:1px solid #D97757; color:#B0522F;
+  background:#FFFDF8;
+  -webkit-backdrop-filter:none; backdrop-filter:none;
+}
+
+/* ---------- 角标：米白实片 + 深字（压在照片上也用实片） ---------- */
+.badge-official, .level-pill{
+  background-color:rgba(250,249,245,.94);
+  background-image:none;
+  -webkit-backdrop-filter:none; backdrop-filter:none;
+  border:1px solid rgba(20,20,19,.16);
+  border-radius:6px;
+  color:var(--ink-900);
+  font-family:var(--sans);
+  font-size:10px; font-weight:600; letter-spacing:.4px;
+  text-shadow:none;
+  box-shadow:none;
+}
+.badge-diy{
+  background:#6A9BCC; color:#141413; border-radius:6px;
+  font-family:var(--sans);
+  box-shadow:none;
+}
+.level-pill{ color:var(--ink-900); }
+.level-pill .dot.is-l4{ box-shadow:0 0 0 1px rgba(20,20,19,.55); }
+
+.lchip{
+  background:#FFFDF8;
+  -webkit-backdrop-filter:none; backdrop-filter:none;
+  border:1px solid rgba(20,20,19,.14);
+  border-radius:6px;
+  color:var(--ink-600);
+  font-family:var(--sans);
+  font-size:10.5px; font-weight:500; letter-spacing:.2px;
+}
+.lchip .dot.is-l4{ box-shadow:0 0 0 1px rgba(20,20,19,.5); }
+
+/* ---------- 结构件 ---------- */
+.gcard{ border-radius:12px; }
+.divider{ background:rgba(20,20,19,.10); }
+.glass-rim{
+  border-radius:12px !important;
+  border:1px solid rgba(20,20,19,.16);
+  box-shadow:none;
+}
+.glass-rim::after{ display:none; }
+.scrim{
+  background:linear-gradient(180deg, rgba(20,20,19,.18) 0%, rgba(20,20,19,.06) 30%,
+             rgba(20,20,19,.46) 64%, rgba(20,20,19,.86) 100%);
+}
+.hero-copy{ text-shadow:none; }
+
+/* ---------- 配方卡 / 列表行 ---------- */
+.vcard{
+  background:#FFFDF8;
+  border:1px solid var(--edge);
+  border-radius:12px;
+}
+.vcard .nm{ font-family:var(--sans); font-size:14px; font-weight:600; letter-spacing:0; }
+.vcard .mt{ font-family:var(--sans); font-size:10.5px; color:var(--ink-400); letter-spacing:0; }
+.vrow .thumb{ border-radius:6px; background:var(--bg-deep); }
+.vrow .nm{ font-family:var(--sans); font-size:13.5px; font-weight:600; letter-spacing:0; }
+.vrow .mt{ font-family:var(--sans); font-size:10.5px; color:var(--ink-400); }
+
+/* ---------- 特性条：实色，无发光 ---------- */
+.segbar .lbl{ font-family:var(--sans); font-size:11.5px; color:var(--ink-400); letter-spacing:.1px; }
+.segbar .segs i{ background:rgba(20,20,19,.12); border-radius:2px; }
+.segbar .segs i.on{ background:#D97757; box-shadow:none; }
+.segbar .val{ font-family:var(--sans); font-size:11px; color:var(--ink-300); }
+
+/* ---------- chip / 搜索 ---------- */
+.chip{
+  border-radius:8px;
+  background-color:#FFFDF8;
+  background-image:none;
+  -webkit-backdrop-filter:none; backdrop-filter:none;
+  border:1px solid rgba(20,20,19,.14);
+  color:var(--ink-400);
+  font-family:var(--sans); font-size:12px; letter-spacing:0;
+  box-shadow:none;
+}
+.chip.on{
+  background-color:#D97757; background-image:none;
+  border-color:#D97757;
+  color:#141413; font-weight:600;
+  box-shadow:none;
+}
+.searchbar{ border-radius:10px !important; color:var(--ink-400); font-family:var(--sans); font-size:12.5px; }
+
+/* ---------- 统计块 ---------- */
+.stat-tile{ background:#FFFDF8; border:1px solid var(--edge); border-radius:10px; }
+.stat-tile .lb{ font-family:var(--sans); font-size:10px; color:var(--ink-400); letter-spacing:.4px; }
+.stat-tile .vl{ font-family:var(--sans); font-size:12.5px; font-weight:600; letter-spacing:0; }
+
+/* ---------- 浮动 tab bar：米白实片 ---------- */
+.tabbar{
+  border-radius:16px;
+  background-color:rgba(250,249,245,.97) !important;
+  background-image:none !important;
+  -webkit-backdrop-filter:none !important;
+  backdrop-filter:none !important;
+  border:1px solid rgba(20,20,19,.12) !important;
+  box-shadow:0 6px 18px rgba(20,20,19,.06) !important;
+}
+.tabbar .tab{
+  border-radius:8px;
+  color:var(--ink-400);
+  font-family:var(--sans); font-size:10px; font-weight:500; letter-spacing:.2px;
+  text-shadow:none;
+}
+.tabbar .tab.active{
+  color:#141413;
+  background-color:#D97757;
+  background-image:none;
+  border:1px solid #D97757;
+  box-shadow:none;
+}
+
+/* ---------- CTA 托盘 ---------- */
+.ctabar{ border-radius:16px; }
+.ctabar .note{ font-family:var(--sans); font-size:10.5px; color:var(--ink-400); letter-spacing:.2px; }
+
+/* ---------- 二级页 nav ---------- */
+.navbar .ttl{
+  font-family:var(--sans); font-size:11.5px; font-weight:500; letter-spacing:.2px;
+  color:rgba(255,255,255,.92); text-shadow:0 1px 6px rgba(0,0,0,.35);
+}
+
+/* ---------- 开关 / 实色锚点 ---------- */
+.toggle{ background:rgba(20,20,19,.12); box-shadow:none; }
+.toggle.on{ background:#D97757; }
+.toggle.on::after{ background:#141413; }
+.solid-amber{
+  border-radius:12px;
+  background:#D97757;
+  box-shadow:none;
+}
+.solid-amber::after{ display:none; }
+
+/* ---------- 降级：无 backdrop-filter 时同样成立 ---------- */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))){
+  .glass, .icbtn, .chip, .badge-official, .level-pill, .lchip, .btn.secondary{
+    background-color:#FFFDF8 !important;
+  }
+}

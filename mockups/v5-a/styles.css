@@ -1,0 +1,383 @@
+/* ============ 盏 v4 · Liquid Glass design tokens ============ */
+:root{
+  /* 底：中性深灰带一点暖，不用纯黑 */
+  --bg:#1A1B20;
+  --bg-deep:#121318;
+
+  /* 文字 */
+  --ink-900:#FFFFFF;
+  --ink-600:#C9CBD3;
+  --ink-400:#9598A2;
+  --ink-300:#9B9FAA;
+
+  /* 「盏」既有品牌色（不变） */
+  --amber:#B07A4A;
+  --amber-deep:#96683C;
+  --amber-lift:#D3A171;
+  --amber-wash:rgba(176,122,74,.18);
+  --diy:#E8843C;
+  --wine:#8E3B34;
+
+  /* L1–L4 等级色（不变） */
+  --l1:#7ED957;
+  --l2:#F5A623;
+  --l3:#D0021B;
+  --l4:#1A1A1A;
+
+  --serif: Georgia,'Songti SC','STSong',serif;
+  --sans: -apple-system,'Inter','PingFang SC','Helvetica Neue',sans-serif;
+
+  /* 玻璃参数（唯一来源） */
+  --gb:20px;                     /* blur：更透配更浅的模糊 */
+  --gs:190%;                     /* saturate：提高传透感 */
+  --glass-tint:rgba(48,46,53,.20);         /* 中性偏暖，更透 */
+  --glass-tint-strong:rgba(16,17,21,.36);  /* 压照片时保可读 */
+  --edge:rgba(255,255,255,.22);           /* 外侧折射边（更锐） */
+  --hi:rgba(255,255,255,.66);             /* 顶部内侧高光（最亮） */
+  --lo:rgba(0,0,0,.34);                   /* 底部内侧暗边（放松，中间更透） */
+  --shadow:0 16px 38px rgba(0,0,0,.32), 0 2px 10px rgba(0,0,0,.18);
+}
+
+*{ margin:0; padding:0; box-sizing:border-box; -webkit-font-smoothing:antialiased; }
+html,body{ background:#0E0F12; font-family:var(--sans); color:var(--ink-900); }
+#root{ display:block; }
+
+/* ============ frame：三层结构的最底一层 ============ */
+.frame{
+  position:relative; width:390px; height:844px; overflow:hidden;
+  margin:0 auto 24px; isolation:isolate;
+  font-family:var(--sans); color:var(--ink-900);
+  background:
+    radial-gradient(72% 40% at 4% -8%, rgba(198,140,86,.30) 0%, rgba(198,140,86,.11) 44%, rgba(198,140,86,0) 72%),
+    radial-gradient(circle 54px at 16% 76%, rgba(255,188,124,.24) 0%, rgba(255,188,124,.24) 52%, rgba(255,188,124,.05) 72%, rgba(255,188,124,0) 90%),
+    radial-gradient(circle 40px at 80% 90%, rgba(255,166,110,.20) 0%, rgba(255,166,110,.20) 50%, rgba(255,166,110,0) 86%),
+    radial-gradient(circle 46px at 91% 56%, rgba(146,176,236,.15) 0%, rgba(146,176,236,.15) 48%, rgba(146,176,236,0) 84%),
+    radial-gradient(58% 38% at 106% 26%, rgba(120,148,200,.11) 0%, rgba(120,148,200,0) 66%),
+    radial-gradient(78% 44% at 90% 100%, rgba(150,64,56,.18) 0%, rgba(150,64,56,0) 62%),
+    linear-gradient(180deg,#1E1F25 0%,#16171C 56%,#121318 100%);
+}
+/* 极轻颗粒：让玻璃表面有介质感，不是纯色块 */
+.frame::after{
+  content:''; position:absolute; inset:0; z-index:80; pointer-events:none;
+  opacity:.04; mix-blend-mode:overlay;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:140px 140px;
+}
+
+.num, .num *{ font-variant-numeric:tabular-nums; }
+.content{ position:absolute; inset:0; overflow:hidden; z-index:1; }
+
+/* ============ 状态栏 / Home indicator ============ */
+.statusbar{
+  position:absolute; top:0; left:0; right:0; height:54px; z-index:60;
+  display:flex; align-items:flex-end; justify-content:space-between;
+  padding:0 28px 10px; pointer-events:none; color:var(--ink-900);
+}
+.statusbar.light .time, .statusbar.light .sic{ color:#fff; text-shadow:0 1px 6px rgba(0,0,0,.45); }
+.statusbar .time{ font-size:15px; font-weight:600; letter-spacing:.2px; }
+.statusbar .sic{ display:flex; align-items:center; gap:6px; }
+.statusbar svg{ display:block; }
+.homeind{
+  position:absolute; left:50%; transform:translateX(-50%); bottom:9px; z-index:95;
+  width:140px; height:5px; border-radius:3px; background:rgba(255,255,255,.85);
+}
+
+/* ============ 排版：无衬线为主，衬线只用于酒名 ============ */
+.display{ font-size:32px; line-height:1.14; font-weight:600; letter-spacing:-1px; }
+.h1{ font-size:22px; line-height:1.25; font-weight:600; letter-spacing:-.6px; }
+.h2{ font-size:15px; line-height:1.35; font-weight:600; letter-spacing:-.2px; }
+.eyebrow{ font-size:10.5px; font-weight:500; letter-spacing:1.2px; color:var(--ink-400); }
+.body{ font-size:13px; line-height:1.65; color:var(--ink-600); }
+.caption{ font-size:11.5px; line-height:1.5; color:var(--ink-400); }
+.small{ font-size:11px; line-height:1.45; color:var(--ink-400); }
+.drink-name{ font-family:var(--serif); font-weight:600; letter-spacing:.2px; }
+
+.sec-head{ display:flex; align-items:center; justify-content:space-between; margin:0 0 8px; }
+.sec-head .h2{ color:var(--ink-900); }
+.sec-head .arr{ color:var(--ink-400); display:flex; align-items:center; font-size:11px; gap:2px; }
+
+/* ============ 玻璃底层（内容层之上的第二层） ============ */
+.glass{
+  position:relative;
+  background-color:var(--glass-tint);
+  background-image:
+    linear-gradient(180deg, rgba(255,255,255,.08) 0%, rgba(255,255,255,0) 46%, rgba(255,255,255,.03) 100%),
+    linear-gradient(152deg, rgba(255,255,255,.08) 0%, rgba(255,255,255,.02) 22%,
+                    rgba(255,255,255,0) 54%, rgba(255,255,255,.03) 100%);
+  -webkit-backdrop-filter:blur(var(--gb)) saturate(var(--gs));
+  backdrop-filter:blur(var(--gb)) saturate(var(--gs));
+  border:1px solid var(--edge);
+  box-shadow:
+    0 0 0 .5px rgba(255,255,255,.12),      /* 0.5px 外侧折射细线 */
+    inset 0 1px 0 var(--hi),              /* 顶内侧高光（最亮） */
+    inset 0 -1px 0 var(--lo),             /* 底内侧暗边 */
+    inset 1px 0 0 rgba(255,255,255,.10),  /* 左右侧缘 */
+    inset -1px 0 0 rgba(255,255,255,.07),
+    var(--shadow);
+  border-radius:20px;
+  text-shadow:0 1px 2px rgba(0,0,0,.38);   /* 文字局部保底 */
+}
+/* 左上主光热区：只补一点，不整片发白（透的关键在边缘） */
+.glass::before{
+  content:''; position:absolute; inset:0; z-index:-1; border-radius:inherit; pointer-events:none;
+  background:radial-gradient(112% 48% at 8% -14%, rgba(255,255,255,.17) 0%, rgba(255,255,255,.04) 44%, rgba(255,255,255,0) 64%);
+}
+/* 高光层：斜向镜面 + 右下极淡冷色色散 */
+.glass::after{
+  content:''; position:absolute; inset:0; z-index:1; border-radius:inherit; pointer-events:none;
+  background:linear-gradient(128deg,
+    rgba(255,236,210,.14) 0%, rgba(255,255,255,0) 18%,
+    rgba(255,255,255,0) 68%, rgba(160,188,255,.09) 100%);
+  mix-blend-mode:screen; opacity:.7;
+}
+/* 压在照片上时加深底，保证文字 AA */
+.glass.on-photo{ background-color:var(--glass-tint-strong); }
+.g20{ --gb:18px; }
+.g26{ --gb:22px; --gs:192%; }
+.g28{ --gb:24px; --gs:195%; }
+
+/* 玻璃圆钮 */
+.icbtn{
+  width:40px; height:40px; border-radius:50%; flex:0 0 auto;
+  display:inline-flex; align-items:center; justify-content:center;
+  position:relative; color:var(--ink-900);
+  background-color:rgba(255,255,255,.06);
+  background-image:linear-gradient(150deg, rgba(255,255,255,.16), rgba(255,255,255,.03) 46%, rgba(255,255,255,.07));
+  -webkit-backdrop-filter:blur(16px) saturate(190%);
+  backdrop-filter:blur(16px) saturate(190%);
+  border:1px solid rgba(255,255,255,.15);
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.42),
+    inset 0 -1px 0 rgba(0,0,0,.34),
+    0 6px 16px rgba(0,0,0,.22);
+}
+.icbtn.frost{
+  color:#fff;
+  background-color:rgba(14,15,19,.40);
+  background-image:linear-gradient(150deg, rgba(255,255,255,.18), rgba(255,255,255,.02) 50%, rgba(255,255,255,.08));
+  border-color:rgba(255,255,255,.24);
+}
+
+/* ============ 胶囊按钮 ============ */
+.btn{
+  height:50px; border-radius:26px; border:none; cursor:default;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  font-size:14.5px; font-weight:600; font-family:var(--sans); letter-spacing:-.2px;
+}
+.btn.primary{
+  background:linear-gradient(180deg,#BE8A59 0%, var(--amber) 46%, #9E6C40 100%);
+  color:#fff;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.34), inset 0 -1px 0 rgba(0,0,0,.24),
+             0 8px 22px rgba(150,104,60,.30);
+}
+.btn.secondary{
+  background-color:rgba(255,255,255,.06);
+  -webkit-backdrop-filter:blur(16px) saturate(190%);
+  backdrop-filter:blur(16px) saturate(190%);
+  border:1px solid rgba(255,255,255,.16); color:var(--ink-900);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.30);
+}
+.btn-outline-amber{
+  height:30px; border-radius:15px; border:1px solid rgba(176,122,74,.55); color:var(--amber-lift);
+  font-size:11.5px; font-weight:600; display:inline-flex; align-items:center; padding:0 12px;
+  background-color:rgba(176,122,74,.12);
+  -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
+}
+
+/* ============ 角标（品牌体系保留；玻璃薄片） ============ */
+.badge-official{
+  position:absolute; top:10px; left:10px; z-index:5;
+  height:23px; padding:0 10px; border-radius:12px;
+  color:#fff; font-size:10px; font-weight:500; letter-spacing:.4px;
+  display:flex; align-items:center; gap:4px;
+  background-color:rgba(14,15,19,.42);
+  -webkit-backdrop-filter:blur(14px) saturate(190%);
+  backdrop-filter:blur(14px) saturate(190%);
+  border:1px solid rgba(255,255,255,.20);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.34), inset 0 -1px 0 rgba(0,0,0,.28);
+  text-shadow:0 1px 2px rgba(0,0,0,.45);
+}
+.badge-diy{
+  position:absolute; top:10px; right:10px; z-index:5;
+  height:23px; padding:0 9px; border-radius:12px;
+  background:var(--diy); color:#fff; font-size:10px; font-weight:700; letter-spacing:1px;
+  display:flex; align-items:center;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.30), 0 4px 12px rgba(232,132,60,.28);
+}
+.level-pill{
+  position:absolute; left:10px; bottom:10px; z-index:5;
+  height:23px; padding:0 10px; border-radius:12px;
+  color:#fff; font-size:10px; font-weight:500;
+  display:flex; align-items:center; gap:5px;
+  background-color:rgba(14,15,19,.42);
+  -webkit-backdrop-filter:blur(14px) saturate(190%);
+  backdrop-filter:blur(14px) saturate(190%);
+  border:1px solid rgba(255,255,255,.20);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.34), inset 0 -1px 0 rgba(0,0,0,.28);
+  text-shadow:0 1px 2px rgba(0,0,0,.45);
+}
+.level-pill .dot{ width:7px; height:7px; border-radius:50%; }
+.level-pill .dot.is-l4{ box-shadow:0 0 0 1px rgba(255,255,255,.55); }
+
+.lchip{
+  display:inline-flex; align-items:center; gap:5px; height:24px; padding:0 9px;
+  border-radius:12px; background-color:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.10);
+  -webkit-backdrop-filter:blur(14px); backdrop-filter:blur(14px);
+  font-size:10.5px; color:var(--ink-600); font-weight:500; white-space:nowrap;
+}
+.lchip .dot{ width:7px; height:7px; border-radius:50%; }
+.lchip .dot.is-l4{ box-shadow:0 0 0 1px rgba(255,255,255,.5); }
+
+/* ============ 整块玻璃卡 ============ */
+.gcard{ border-radius:20px; overflow:hidden; }
+.divider{ height:1px; background:rgba(255,255,255,.07); margin:0 16px; }
+
+/* 图片区：固定比例裁切；只有 H1 hero 加一层玻璃边光 */
+.ph{ position:relative; overflow:hidden; border-radius:16px; }
+.ph img{ width:100%; height:100%; object-fit:cover; display:block; }
+.scrim{ position:absolute; inset:0; z-index:2;
+  background:linear-gradient(180deg, rgba(8,9,12,.32) 0%, rgba(8,9,12,.12) 30%, rgba(8,9,12,.58) 62%, rgba(8,9,12,.94) 100%); }
+.hero-copy{ text-shadow:0 1px 16px rgba(0,0,0,.55); }
+/* 玻璃展台：只在 H1 hero 用一次，避免每张图套玻璃 */
+.glass-rim{
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.30), inset 0 -1px 0 rgba(0,0,0,.28),
+             0 16px 36px rgba(0,0,0,.30);
+  border:1px solid rgba(255,255,255,.12);
+}
+.glass-rim::after{
+  content:''; position:absolute; inset:0; z-index:3; pointer-events:none;
+  border-radius:inherit;
+  background:linear-gradient(122deg, rgba(255,238,214,.13) 0%, rgba(255,255,255,0) 26%,
+              rgba(255,255,255,0) 74%, rgba(168,192,255,.08) 100%);
+  mix-blend-mode:screen;
+}
+
+/* 配方网格卡 */
+.vcard{ display:flex; flex-direction:column; border-radius:20px; overflow:hidden; }
+.vcard .ph{ height:104px; border-radius:0; }
+.vcard .ci{ padding:10px 13px 11px; display:flex; flex-direction:column; gap:4px; }
+.vcard .nm{ font-size:14.5px; font-weight:600; letter-spacing:-.2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.vcard .mt{ display:flex; align-items:center; gap:5px; font-size:10.5px; color:var(--ink-400); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.vcard .mt .d3{ width:17px; height:17px; object-fit:contain; flex:0 0 auto; }
+
+/* 列表行 */
+.vrow{ display:flex; align-items:center; gap:12px; padding:13px 15px; }
+.vrow .thumb{ width:52px; height:52px; border-radius:13px; overflow:hidden; flex:0 0 auto; background:rgba(255,255,255,.06); }
+.vrow .thumb img{ width:100%; height:100%; object-fit:cover; }
+.vrow .inf{ flex:1; min-width:0; display:flex; flex-direction:column; gap:3px; }
+.vrow .nm{ font-size:13.5px; font-weight:600; letter-spacing:-.2px; }
+.vrow .mt{ font-size:10.5px; color:var(--ink-400); font-variant-numeric:tabular-nums; }
+
+/* ============ 分段特性条 ============ */
+.segbar{ display:flex; align-items:center; gap:10px; }
+.segbar .lbl{ width:48px; font-size:11.5px; color:var(--ink-400); flex:0 0 auto; }
+.segbar .segs{ flex:1; display:flex; gap:4px; }
+.segbar .segs i{ flex:1; height:5px; border-radius:3px; background:rgba(255,255,255,.10); }
+.segbar .segs i.on{ background:var(--amber-lift); box-shadow:0 0 8px rgba(211,161,113,.35); }
+.segbar .val{ width:30px; text-align:right; font-size:11px; color:var(--ink-300); font-variant-numeric:tabular-nums; flex:0 0 auto; }
+
+/* ============ chip：玻璃胶囊 ============ */
+.chips{ display:flex; align-items:center; gap:7px; }
+.chip{
+  height:32px; padding:0 14px; border-radius:16px;
+  color:var(--ink-400); font-size:12px; display:inline-flex; align-items:center; gap:5px; white-space:nowrap;
+  background-color:rgba(255,255,255,.055);
+  background-image:linear-gradient(160deg, rgba(255,255,255,.12), rgba(255,255,255,.02) 60%);
+  -webkit-backdrop-filter:blur(14px) saturate(190%);
+  backdrop-filter:blur(14px) saturate(190%);
+  border:1px solid rgba(255,255,255,.10);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.24), inset 0 -1px 0 rgba(0,0,0,.22);
+}
+.chip.on{
+  color:#F8EBDD; font-weight:600;
+  background-color:rgba(176,122,74,.20);
+  background-image:linear-gradient(160deg, rgba(211,161,113,.34), rgba(176,122,74,.10) 70%);
+  border-color:rgba(211,161,113,.40);
+  box-shadow:inset 0 1px 0 rgba(255,232,205,.42), inset 0 -1px 0 rgba(0,0,0,.28),
+             0 4px 14px rgba(150,104,60,.20);
+}
+
+/* 搜索框：玻璃 */
+.searchbar{
+  height:46px; border-radius:23px; display:flex; align-items:center; gap:9px;
+  padding:0 16px; color:var(--ink-400); font-size:12.5px;
+}
+
+/* ============ 统计块（玻璃） ============ */
+.stat-tile{ border-radius:16px; padding:10px 12px; display:flex; flex-direction:column; gap:6px; min-width:0; }
+.stat-tile .lb{ font-size:10px; color:var(--ink-600); letter-spacing:.2px; }
+.stat-tile .vl{ display:flex; align-items:center; gap:5px; font-size:12.5px; font-weight:600; white-space:nowrap; }
+.stat-tile .vl .d3{ width:18px; height:18px; object-fit:contain; }
+
+/* ============ 浮动 tab bar（玻璃浮层，压在最上面） ============ */
+.tabbar{
+  position:absolute; left:16px; right:16px; bottom:26px; height:64px; z-index:70;
+  border-radius:32px; padding:8px; display:flex; align-items:center;
+  /* 局部保底：底部下沉一层淡黑，让 10px 标签在压亮照片时仍可读；其余仍透 */
+  background-image:
+    linear-gradient(180deg, rgba(10,11,15,.04) 0%, rgba(10,11,15,.20) 44%, rgba(10,11,15,.52) 100%),
+    linear-gradient(180deg, rgba(255,255,255,.08) 0%, rgba(255,255,255,0) 46%, rgba(255,255,255,.03) 100%);
+}
+.tabbar .tab{
+  flex:1; height:48px; border-radius:24px;
+  display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px;
+  color:rgba(255,255,255,.82); font-size:10px; font-weight:500;
+  text-shadow:0 1px 2px rgba(0,0,0,.50);
+}
+.tabbar .tab.active{
+  color:#F7E7D6;
+  background-color:rgba(176,122,74,.24);
+  background-image:linear-gradient(170deg, rgba(211,161,113,.36), rgba(176,122,74,.10));
+  border:1px solid rgba(211,161,113,.34);
+  box-shadow:inset 0 1px 0 rgba(255,233,207,.40), inset 0 -1px 0 rgba(0,0,0,.24);
+}
+
+/* ============ 浮动底部 CTA（玻璃托盘） ============ */
+.ctabar{
+  position:absolute; left:16px; right:16px; bottom:22px; z-index:70;
+  border-radius:28px; padding:12px;
+}
+.ctabar .note{ text-align:center; font-size:10.5px; color:var(--ink-600); margin-bottom:8px; }
+
+/* ============ 二级页 nav（玻璃圆钮浮在 hero 上） ============ */
+.navbar{
+  position:absolute; top:54px; left:0; right:0; height:48px; z-index:55;
+  display:flex; align-items:center; justify-content:space-between; padding:0 20px;
+}
+.navbar .ttl{
+  font-size:11.5px; font-weight:500; letter-spacing:.2px; color:rgba(255,255,255,.92);
+  position:absolute; left:50%; transform:translateX(-50%);
+  text-shadow:0 1px 8px rgba(0,0,0,.45);
+}
+
+/* ============ 其它 ============ */
+.avatar{ border-radius:50%; object-fit:cover; flex:0 0 auto; }
+.toggle{ width:46px; height:28px; border-radius:14px; background:rgba(255,255,255,.12); position:relative; flex:0 0 auto;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.18); }
+.toggle::after{ content:''; position:absolute; top:2.5px; left:3px; width:23px; height:23px; border-radius:50%; background:#fff;
+  box-shadow:0 2px 6px rgba(0,0,0,.35); }
+.toggle.on{ background:linear-gradient(180deg,#BE8A59,var(--amber)); }
+.toggle.on::after{ left:auto; right:3px; }
+
+/* 实色锚点：C1 的琥珀数据卡（全屏唯一实色，压住整页玻璃） */
+.solid-amber{
+  border-radius:22px;
+  background:linear-gradient(155deg,#C08A57 0%,#B07A4A 42%,#96683C 100%);
+  box-shadow:inset 0 1px 0 rgba(255,238,215,.55), inset 0 -1px 0 rgba(0,0,0,.22),
+             0 16px 34px rgba(150,104,60,.28);
+  position:relative; overflow:hidden;
+}
+.solid-amber::after{
+  content:''; position:absolute; inset:0; pointer-events:none;
+  background:linear-gradient(118deg, rgba(255,255,255,.30) 0%, rgba(255,255,255,0) 34%,
+              rgba(255,255,255,0) 72%, rgba(80,40,10,.16) 100%);
+  mix-blend-mode:screen;
+}
+
+/* 深色回退：不支持 backdrop-filter 的设备用半透明实色 */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))){
+  .glass, .icbtn, .chip, .badge-official, .level-pill, .lchip, .btn.secondary{
+    background-color:rgba(30,31,37,.92) !important;
+  }
+}

@@ -1,0 +1,231 @@
+/* ============ 盏 v3 · 深色样张 design tokens ============ */
+:root{
+  /* 底色与容器：参考图 #191A20 / #312F31，略作中性化 */
+  --bg:#17181C;
+  --bg-elev:#1E2025;
+  --surface:#232529;
+  --surface-2:#2C2E34;
+  --surface-3:#35373E;
+
+  /* 文字 */
+  --ink-900:#FFFFFF;
+  --ink-600:#C7C9CF;
+  --ink-400:#8E9099;
+  --ink-300:#5E6069;
+
+  /* 线与遮罩 */
+  --hairline:rgba(255,255,255,.10);
+  --hairline-soft:rgba(255,255,255,.06);
+  --frost:rgba(16,17,21,.52);
+
+  /* 「盏」既有品牌色 */
+  --amber:#B07A4A;          /* 主色保持 */
+  --amber-deep:#96683C;
+  --amber-lift:#D3A171;     /* 深底上的文字/图标提亮版 */
+  --amber-wash:rgba(176,122,74,.16);
+  --diy:#E8843C;
+  --wine:#8E3B34;
+
+  /* L1–L4 等级色保持 */
+  --l1:#7ED957;
+  --l2:#F5A623;
+  --l3:#D0021B;
+  --l4:#1A1A1A;
+
+  --serif: Georgia, 'Songti SC', 'STSong', serif;
+  --sans: -apple-system, 'Inter', 'PingFang SC', 'Helvetica Neue', sans-serif;
+}
+*{ margin:0; padding:0; box-sizing:border-box; -webkit-font-smoothing:antialiased; }
+html,body{ background:#0E0F12; font-family:var(--sans); color:var(--ink-900); }
+#root{ display:block; }
+
+/* ============ frame ============ */
+.frame{
+  position:relative; width:390px; height:844px; overflow:hidden;
+  background:var(--bg); margin:0 auto 24px;
+  font-family:var(--sans); color:var(--ink-900);
+}
+.num, .num *{ font-variant-numeric: tabular-nums; }
+
+/* ============ 状态栏 / Home indicator ============ */
+.statusbar{
+  position:absolute; top:0; left:0; right:0; height:54px; z-index:60;
+  display:flex; align-items:flex-end; justify-content:space-between;
+  padding:0 28px 10px; pointer-events:none;
+  color:var(--ink-900);
+}
+.statusbar .time{ font-size:15px; font-weight:600; letter-spacing:.2px; }
+.statusbar .sic{ display:flex; align-items:center; gap:6px; }
+.statusbar svg{ display:block; }
+.homeind{
+  position:absolute; left:50%; transform:translateX(-50%); bottom:9px; z-index:95;
+  width:140px; height:5px; border-radius:3px; background:rgba(255,255,255,.85);
+}
+
+/* ============ 排版：无衬线为主，衬线只用于酒名 ============ */
+.display{ font-size:32px; line-height:1.14; font-weight:600; letter-spacing:-1px; }
+.h1{ font-size:22px; line-height:1.25; font-weight:600; letter-spacing:-.6px; }
+.h2{ font-size:15px; line-height:1.35; font-weight:600; letter-spacing:-.2px; }
+.eyebrow{ font-size:10.5px; font-weight:500; letter-spacing:1.2px; color:var(--ink-400); }
+.body{ font-size:13px; line-height:1.65; color:var(--ink-600); }
+.caption{ font-size:11.5px; line-height:1.5; color:var(--ink-400); }
+.small{ font-size:11px; line-height:1.45; color:var(--ink-400); }
+.drink-name{ font-family:var(--serif); font-weight:600; letter-spacing:.2px; }
+
+/* section 标题行 */
+.sec-head{ display:flex; align-items:center; justify-content:space-between; margin:0 0 10px; }
+.sec-head .h2{ color:var(--ink-900); }
+.sec-head .arr{ color:var(--ink-400); display:flex; align-items:center; font-size:11px; gap:2px; }
+
+/* ============ 圆形图标钮（参考图：40px、1px 描边、无填色） ============ */
+.icbtn{
+  width:40px; height:40px; border-radius:50%; flex:0 0 auto;
+  border:1px solid rgba(255,255,255,.16); background:rgba(255,255,255,.035); color:var(--ink-900);
+  display:inline-flex; align-items:center; justify-content:center;
+}
+.icbtn.frost{ border-color:rgba(255,255,255,.28); background:rgba(16,17,21,.42); backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); color:#fff; }
+
+/* ============ 按钮：全圆角胶囊，主色平涂 ============ */
+.btn{
+  height:50px; border-radius:26px; border:none; cursor:default;
+  display:flex; align-items:center; justify-content:center; gap:8px;
+  font-size:14.5px; font-weight:600; font-family:var(--sans); letter-spacing:-.2px;
+}
+.btn.primary{ background:var(--amber); color:#fff; }
+.btn.secondary{ background:transparent; border:1px solid rgba(255,255,255,.18); color:var(--ink-900); }
+.btn.text-only{ background:transparent; color:var(--ink-400); font-weight:500; font-size:12px; height:auto; }
+.btn-outline-amber{
+  height:30px; border-radius:15px; border:1px solid rgba(176,122,74,.55); color:var(--amber-lift);
+  font-size:11.5px; font-weight:600; display:inline-flex; align-items:center; padding:0 12px; background:transparent;
+}
+
+/* ============ 角标（保留既有的官方 / DIY 体系） ============ */
+.badge-official{
+  position:absolute; top:10px; left:10px; z-index:5;
+  height:23px; padding:0 10px; border-radius:12px;
+  background:rgba(16,17,21,.52); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  color:#fff; font-size:10px; font-weight:500; letter-spacing:.4px;
+  display:flex; align-items:center; gap:4px; border:1px solid rgba(255,255,255,.14);
+}
+.badge-diy{
+  position:absolute; top:10px; right:10px; z-index:5;
+  height:23px; padding:0 9px; border-radius:12px;
+  background:var(--diy); color:#fff; font-size:10px; font-weight:700; letter-spacing:1px;
+  display:flex; align-items:center;
+}
+.level-pill{
+  position:absolute; left:10px; bottom:10px; z-index:5;
+  height:23px; padding:0 10px; border-radius:12px;
+  background:rgba(16,17,21,.52); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  color:#fff; font-size:10px; font-weight:500;
+  display:flex; align-items:center; gap:5px; border:1px solid rgba(255,255,255,.14);
+}
+.level-pill .dot{ width:7px; height:7px; border-radius:50%; }
+/* L4 在深底不可见，加一圈白描边（等级色本身不变） */
+.level-pill .dot.is-l4{ box-shadow:0 0 0 1px rgba(255,255,255,.55); }
+
+/* 深底等级 chip */
+.lchip{
+  display:inline-flex; align-items:center; gap:5px; height:24px; padding:0 9px;
+  border-radius:12px; background:rgba(255,255,255,.06);
+  font-size:10.5px; color:var(--ink-600); font-weight:500; white-space:nowrap;
+}
+.lchip .dot{ width:7px; height:7px; border-radius:50%; }
+.lchip .dot.is-l4{ box-shadow:0 0 0 1px rgba(255,255,255,.5); }
+
+/* ============ 卡片：整块填色、18px 圆角、无描边无投影 ============ */
+.card{ background:var(--surface); border-radius:18px; overflow:hidden; }
+.gcard{ background:var(--surface); border-radius:18px; overflow:hidden; }
+.divider{ height:1px; background:var(--hairline-soft); margin:0 14px; }
+
+/* 图片：统一圆角 16；列表缩略图固定裁切 */
+.ph{ position:relative; overflow:hidden; border-radius:16px; }
+.ph img{ width:100%; height:100%; object-fit:cover; display:block; }
+.scrim{ position:absolute; inset:0; background:linear-gradient(180deg, rgba(8,9,12,.30) 0%, rgba(8,9,12,.12) 30%, rgba(8,9,12,.56) 62%, rgba(8,9,12,.94) 100%); z-index:2; }
+.hero-copy{ text-shadow:0 1px 16px rgba(0,0,0,.55); }
+
+/* 配方网格卡 */
+.vcard{
+  background:var(--surface); border-radius:18px; overflow:hidden;
+  display:flex; flex-direction:column;
+}
+.vcard .ph{ height:108px; border-radius:0; }
+.vcard .ci{ padding:10px 12px 12px; display:flex; flex-direction:column; gap:4px; }
+.vcard .nm{ font-size:14.5px; font-weight:600; letter-spacing:-.2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.vcard .mt{ display:flex; align-items:center; gap:5px; font-size:10.5px; color:var(--ink-400); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.vcard .mt .d3{ width:17px; height:17px; object-fit:contain; flex:0 0 auto; }
+.vcard .mt .match{ color:var(--amber-lift); font-weight:600; }
+
+/* 列表行 */
+.vrow{ display:flex; align-items:center; gap:12px; padding:12px 14px; }
+.vrow .thumb{ width:52px; height:52px; border-radius:13px; overflow:hidden; flex:0 0 auto; background:var(--surface-2); }
+.vrow .thumb img{ width:100%; height:100%; object-fit:cover; }
+.vrow .inf{ flex:1; min-width:0; display:flex; flex-direction:column; gap:3px; }
+.vrow .nm{ font-size:13.5px; font-weight:600; letter-spacing:-.2px; }
+.vrow .mt{ font-size:10.5px; color:var(--ink-400); font-variant-numeric:tabular-nums; }
+
+/* ============ 分段特性条（深底） ============ */
+.segbar{ display:flex; align-items:center; gap:10px; }
+.segbar .lbl{ width:48px; font-size:11.5px; color:var(--ink-400); flex:0 0 auto; }
+.segbar .segs{ flex:1; display:flex; gap:4px; }
+.segbar .segs i{ flex:1; height:5px; border-radius:3px; background:rgba(255,255,255,.10); }
+.segbar .segs i.on{ background:var(--amber-lift); }
+.segbar .val{ width:30px; text-align:right; font-size:11px; color:var(--ink-300); font-variant-numeric:tabular-nums; flex:0 0 auto; }
+
+/* ============ chip（参考图：选中填色块、未选纯文字） ============ */
+.chips{ display:flex; align-items:center; gap:6px; }
+.chip{
+  height:32px; padding:0 14px; border-radius:16px; background:transparent;
+  color:var(--ink-400); font-size:12px; display:inline-flex; align-items:center; gap:5px; white-space:nowrap;
+}
+.chip.on{ background:var(--surface-2); color:var(--ink-900); font-weight:600; }
+
+/* ============ 统计块 ============ */
+.stat-tile{
+  background:var(--surface); border-radius:14px; padding:11px 12px;
+  display:flex; flex-direction:column; gap:6px; min-width:0;
+}
+.stat-tile .lb{ font-size:10px; color:var(--ink-400); letter-spacing:.2px; }
+.stat-tile .vl{ display:flex; align-items:center; gap:5px; font-size:12.5px; font-weight:600; white-space:nowrap; }
+.stat-tile .vl .d3{ width:18px; height:18px; object-fit:contain; }
+
+/* ============ tab bar（参考图：无实线顶边，靠模糊分层） ============ */
+.tabbar{
+  position:absolute; left:0; right:0; bottom:0; height:83px; z-index:50;
+  background:rgba(23,24,28,.86); backdrop-filter:blur(22px); -webkit-backdrop-filter:blur(22px);
+  border-top:1px solid var(--hairline-soft);
+  display:flex; align-items:flex-start; padding:12px 10px 0;
+}
+.tabbar .tab{ flex:1; display:flex; flex-direction:column; align-items:center; gap:4px; color:var(--ink-300); position:relative; }
+.tabbar .tab .lb{ font-size:10.5px; font-weight:500; }
+.tabbar .tab.active{ color:var(--amber-lift); }
+.tabbar .tab.active::after{ content:''; width:4px; height:4px; border-radius:50%; background:var(--amber-lift); }
+
+/* ============ 二级页 nav ============ */
+.navbar{
+  position:absolute; top:54px; left:0; right:0; height:50px; z-index:55;
+  display:flex; align-items:center; justify-content:space-between; padding:0 20px;
+}
+.navbar .ttl{ font-size:12px; font-weight:500; letter-spacing:.2px; color:var(--ink-600); position:absolute; left:50%; transform:translateX(-50%); }
+.navbar.flow{ position:static; }
+
+/* ============ 固定底部 CTA ============ */
+.ctabar{
+  position:absolute; left:0; right:0; bottom:0; z-index:60;
+  padding:16px 20px 30px;
+  background:linear-gradient(180deg, rgba(23,24,28,0) 0%, rgba(23,24,28,.92) 34%, var(--bg) 100%);
+}
+
+/* ============ 深色分隔提示条 ============ */
+.drinkwarn{
+  display:flex; align-items:center; justify-content:center; gap:6px;
+  font-size:10.5px; color:var(--ink-300); padding:7px 0;
+}
+.drinkwarn .dot{ width:5px; height:5px; border-radius:50%; background:var(--wine); flex:0 0 auto; }
+
+/* ============ 头像 / 其他 ============ */
+.avatar{ border-radius:50%; object-fit:cover; flex:0 0 auto; }
+.toggle{ width:46px; height:28px; border-radius:14px; background:rgba(255,255,255,.12); position:relative; flex:0 0 auto; }
+.toggle::after{ content:''; position:absolute; top:2.5px; left:3px; width:23px; height:23px; border-radius:50%; background:#fff; }
+.toggle.on{ background:var(--amber); }
+.toggle.on::after{ left:auto; right:3px; }

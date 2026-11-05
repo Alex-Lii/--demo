@@ -1,0 +1,367 @@
+/* ============================================================================
+   ZHAN · 盏 — Design Tokens
+   ========================================================================== */
+:root {
+  /* Brand colors — warm amber + deep ink, oriental paper feel */
+  --amber-50:  #FBF1E3;
+  --amber-100: #F5E2C4;
+  --amber-200: #E8C08C;
+  --amber-300: #D99B5A;
+  --amber-400: #C48344;
+  --amber-500: #B07A4A;  /* primary */
+  --amber-600: #8A5C35;
+  --amber-700: #6B4525;
+
+  --ink-900: #1A1A1A;     /* primary ink */
+  --ink-700: #3D362C;
+  --ink-500: #5A4A38;
+  --ink-300: #9C8B74;
+  --ink-200: #C4B59C;
+  --ink-100: #E4D8C5;    /* border */
+
+  --paper:    #F7F1E8;    /* page background — rice paper */
+  --porcelain:#FBF8F2;    /* card background */
+  --cream:    #F0E8DC;    /* surface */
+  --off-white:#FFFBF3;
+
+  /* Wine level colors (L1-L4) */
+  --lv-l1: #7ED957;       /* 入门酒 */
+  --lv-l2: #F5A623;       /* 进阶酒 */
+  --lv-l3: #D0021B;       /* 精品酒 */
+  --lv-l4: #1A1A1A;       /* 稀有酒 */
+
+  --diy-orange: #E8843C;  /* DIY corner badge */
+  --danger:     #C0392B;  /* alcohol warning bar */
+  --success:    #7ED957;
+
+  /* Typography — PingFang SC */
+  --font: -apple-system, BlinkMacSystemFont, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+  --display:  28px/36px var(--font);
+  --h1:       22px/28px var(--font);
+  --h2:       18px/24px var(--font);
+  --body:     14px/22px var(--font);
+  --caption:  12px/18px var(--font);
+  --small:    11px/16px var(--font);
+
+  /* Radius */
+  --r-card:   16px;
+  --r-btn:    12px;
+  --r-chip:   20px;
+  --r-avatar: 50%;
+
+  /* Spacing */
+  --s-4:  4px;
+  --s-8:  8px;
+  --s-12: 12px;
+  --s-16: 16px;
+  --s-24: 24px;
+  --s-32: 32px;
+  --s-40: 40px;
+
+  /* Shadows */
+  --shadow-1: 0 1px 2px rgba(26,26,26,.04), 0 2px 8px rgba(26,26,26,.06);
+  --shadow-2: 0 4px 16px rgba(26,26,26,.08);
+}
+
+/* ============================================================================
+   Frame container — one iPhone per .frame
+   ========================================================================== */
+body {
+  margin: 0;
+  background: #2D241A;  /* dark surround so frames stand out clearly */
+  font-family: var(--font);
+}
+.pkg {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 20px;
+  justify-content: center;
+}
+.frame {
+  width: 390px;
+  height: 844px;
+  background: var(--paper);
+  border-radius: 36px;       /* iPhone home indicator radius */
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 20px 60px rgba(0,0,0,.35);
+  flex-shrink: 0;
+}
+
+/* ============================================================================
+   Status bar — fixed at top of every frame
+   ========================================================================== */
+.statusbar {
+  height: 54px;
+  padding: 18px 24px 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font: 600 15px/1 var(--font);
+  color: var(--ink-900);
+  background: transparent;
+}
+.statusbar .right { display: flex; gap: 6px; align-items: center; }
+.statusbar .dot { width: 4px; height: 4px; border-radius: 50%; background: var(--ink-900); }
+.statusbar .bars { display: flex; gap: 2px; height: 10px; align-items: flex-end; }
+.statusbar .bars span { width: 3px; background: var(--ink-900); border-radius: 1px; }
+.statusbar .bars span:nth-child(1){ height: 4px; }
+.statusbar .bars span:nth-child(2){ height: 6px; }
+.statusbar .bars span:nth-child(3){ height: 8px; }
+.statusbar .bars span:nth-child(4){ height: 10px; }
+
+/* ============================================================================
+   Top bar / navigation bar
+   ========================================================================== */
+.topbar {
+  height: 44px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--paper);
+  border-bottom: 1px solid var(--ink-100);
+}
+.topbar .title { font: 600 17px/1 var(--font); color: var(--ink-900); }
+.topbar .back { font: 400 17px/1 var(--font); color: var(--amber-500); padding: 4px 0; }
+.topbar .right-btn { font: 400 15px/1 var(--font); color: var(--amber-500); padding: 4px 0; }
+
+/* ============================================================================
+   Bottom Tab Bar — canonical nav for tabs (pages H1/C1/S1/M1)
+   ========================================================================== */
+.tabbar {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 83px;
+  background: var(--off-white);
+  border-top: 1px solid var(--ink-100);
+  padding-bottom: 34px;  /* home indicator */
+  display: flex;
+}
+.tabbar .item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  font: 500 10px/1 var(--font);
+  color: var(--ink-300);
+  padding-top: 10px;
+}
+.tabbar .item.active { color: var(--amber-500); }
+.tabbar .icon { font-size: 22px; line-height: 1; }
+
+/* ============================================================================
+   Alcohol warning strip — fixed bar, non-closable
+   ========================================================================== */
+.warning-strip {
+  height: 30px;
+  background: #C0392B;
+  color: #fff;
+  font: 500 11px/30px var(--font);
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+
+/* ============================================================================
+   Common components
+   ========================================================================== */
+.scroll {
+  height: calc(100% - 54px);
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  background: var(--paper);
+}
+.scroll.tab-content {
+  height: calc(100% - 54px - 44px - 30px); /* status + top + warning */
+  padding-bottom: 83px;                     /* tab bar */
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  border-radius: var(--r-btn);
+  font: 600 16px/1 var(--font);
+  padding: 0 24px;
+  border: none;
+  cursor: default;
+}
+.btn.primary   { background: var(--amber-500); color: #fff; box-shadow: var(--shadow-1); }
+.btn.secondary { background: var(--ink-900);   color: #fff; }
+.btn.ghost     { background: transparent; border: 1px solid var(--ink-100); color: var(--ink-700); }
+.btn.block     { width: 100%; height: 52px; }
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  height: 30px;
+  padding: 0 14px;
+  border-radius: var(--r-chip);
+  font: 500 12px/1 var(--font);
+  background: var(--cream);
+  color: var(--ink-700);
+  border: 1px solid transparent;
+}
+.chip.active {
+  background: var(--amber-500);
+  color: #fff;
+  border-color: var(--amber-500);
+}
+
+/* Wine level side-badge */
+.level-badge {
+  display: inline-block;
+  min-width: 54px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 4px;
+  font: 600 11px/22px var(--font);
+  color: #fff;
+  text-align: center;
+  letter-spacing: 0.5px;
+}
+.level-badge.l1 { background: var(--lv-l1); color: var(--ink-900); }
+.level-badge.l2 { background: var(--lv-l2); color: var(--ink-900); }
+.level-badge.l3 { background: var(--lv-l3); }
+.level-badge.l4 { background: var(--lv-l4); }
+
+/* Card */
+.card {
+  background: var(--porcelain);
+  border-radius: var(--r-card);
+  box-shadow: var(--shadow-1);
+  overflow: hidden;
+}
+
+/* Recipe card (home feed, 2-col) */
+.recipe-card {
+  background: var(--porcelain);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: var(--shadow-1);
+}
+.recipe-card .img-wrap {
+  position: relative;
+  height: 132px;
+  background: var(--amber-100);
+}
+.recipe-card .corner-badge {
+  position: absolute;
+  top: 8px; right: 8px;
+  padding: 3px 8px;
+  border-radius: 4px;
+  font: 600 10px/1 var(--font);
+  letter-spacing: 0.5px;
+}
+.recipe-card .corner-badge.official { background: var(--ink-900); color: #fff; }
+.recipe-card .corner-badge.diy       { background: var(--diy-orange); color: #fff; }
+.recipe-card .corner-badge.diy-off   { background: var(--ink-300); color: #fff; }
+.recipe-card .stars { font-size: 11px; color: var(--amber-400); letter-spacing: 1px; }
+.recipe-card .info { padding: 10px 12px; }
+.recipe-card .name { font: 600 13px/1.3 var(--font); color: var(--ink-900); }
+.recipe-card .sub  { font: 400 11px/1.6 var(--font); color: var(--ink-300); margin-top: 3px; }
+
+/* Corner label on recipe-detail image */
+.detail-corner {
+  position: absolute;
+  top: 12px; right: 12px;
+  display: flex;
+  gap: 6px;
+}
+.detail-corner .cb {
+  padding: 5px 10px;
+  border-radius: 4px;
+  font: 600 11px/1 var(--font);
+}
+
+/* Avatar */
+.avatar { width: 40px; height: 40px; border-radius: var(--r-avatar); background: var(--amber-200); display: inline-flex; align-items: center; justify-content: center; font: 600 14px/1 var(--font); color: var(--ink-700); }
+.avatar.sm { width: 28px; height: 28px; font-size: 11px; }
+.avatar.lg { width: 72px; height: 72px; font-size: 22px; }
+
+/* ====== PAGE-SPECIFIC overrides ====== */
+
+/* Age confirm (L1) — centered card */
+.modal-center {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(26,26,26,.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.modal-card {
+  width: 100%;
+  background: var(--porcelain);
+  border-radius: 20px;
+  padding: 28px 24px 24px;
+  box-shadow: var(--shadow-2);
+}
+
+/* Login (L2) — same modal style */
+
+/* Filter sheet (H2) — bottom sheet */
+.sheet {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  background: var(--porcelain);
+  border-top-left-radius: 24px;
+  border-top-right-radius: 24px;
+  padding: 20px 20px 30px;
+  box-shadow: 0 -6px 24px rgba(0,0,0,.12);
+}
+.sheet-handle {
+  width: 40px; height: 4px;
+  background: var(--ink-200);
+  border-radius: 2px;
+  margin: 0 auto 16px;
+}
+
+/* Report sheet (S4) — same */
+
+/* Toast / completion (G3) */
+.toast-center {
+  position: absolute;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(26,26,26,.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.toast-card {
+  width: 100%;
+  background: var(--porcelain);
+  border-radius: 20px;
+  padding: 36px 24px 28px;
+  text-align: center;
+  box-shadow: var(--shadow-2);
+}
+.toast-card .emoji { font-size: 56px; }
+.toast-card .head  { font: 600 20px/1.3 var(--font); color: var(--ink-900); margin-top: 8px; }
+.toast-card .sub   { font: 400 13px/1.6 var(--font); color: var(--ink-500); margin-top: 6px; }
+
+/* FAB — publish on feed (S1) */
+.fab {
+  position: absolute;
+  right: 20px;
+  bottom: 103px;   /* above tab bar */
+  width: 52px; height: 52px;
+  border-radius: 50%;
+  background: var(--amber-500);
+  color: #fff;
+  box-shadow: 0 6px 20px rgba(176,122,74,.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  z-index: 10;
+}
+
+/* ====== Simple fake images (SVG inline as data URI in JS) ====== */
