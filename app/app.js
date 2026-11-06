@@ -57,6 +57,8 @@ const S = {
   recipeStep: 0,
   doneStep: new Set(),
   sheet: null,
+  sheetKind: 'filter',
+  doneId: 'd09',
   toast: '',
   canmakeLevel: 2,
   heartOn: false,
@@ -83,21 +85,23 @@ function frame(screenHtml){
 
 function renderTabBar(){
   const tabs = [['home','首页'],['bottle','酒库'],['chat','酒圈'],['user','我的']];
-  const hide = ['recipe','flow','bottle-detail','comment','search'].includes(_route.name);
+  const hide = ['recipe','flow','bottle-detail','comment','search',
+    'age','login','pick1','pick2','cellar','mywine','addwine','materials','saved',
+    'publish','report','done','history','settings'].includes(_route.name);
   const cls = hide ? 'tabbar glass g28 hide' : 'tabbar glass g28';
   const nameMap = { home:'home', bottle:'bottle', chat:'chat', user:'user' };
   let activeTab = nameMap[_route.name] || 'home';
-  return `<div class="${cls}">${tabs.map(([i,lb])=>`<button class="tab${activeTab===i?' active':''}" data-goto="${i}">${ic(i,20)}<span class="lb">${lb}</span></button>`).join('')}</div>`;
+  return `<div class="${cls}">${tabs.map(([i,lb])=>`<button class="tab${activeTab===i?' active':''}" data-goto="${i}" ${activeTab===i?'aria-current="page"':''}>${ic(i,22)}<span class="lb">${lb}</span></button>`).join('')}</div>`;
 }
 
 function navbar(title, back, actions = ''){
   const ttl = title ? `<span class="ttl">${title}</span>` : '';
-  return `<div class="navbar">${back ? `<button class="icbtn frost" data-back>${ic('chevron-left',18)}</button>` : '<span/>'}${ttl}<div style="display:flex;gap:8px">${actions}</div></div>`;
+  return `<div class="navbar">${back ? `<button class="icbtn frost" data-back aria-label="返回">${ic('chevron-left',18)}</button>` : '<span/>'}${ttl}<div style="display:flex;gap:0">${actions}</div></div>`;
 }
 
-function icbtn(icon, cls = '', size = 18, action = ''){
+function icbtn(icon, cls = '', size = 18, action = '', label = ''){
   const attr = action ? `data-act="${action}"` : '';
-  return `<button class="icbtn ${cls}" ${attr}>${ic(icon, size)}</button>`;
+  return `<button class="icbtn ${cls}" ${attr} aria-label="${label || icon}">${ic(icon, size)}</button>`;
 }
 
 /* 等级计量条 */
@@ -111,16 +115,38 @@ function lvBadge(level, variant = 'normal'){
   return `<span class="${cls}">${lvMeter(level)}</span>`;
 }
 
+/* 风味钻石：每款配方一颗，由四维风味生成，不表达难度 */
+const TIERS = ['', '一阶', '二阶', '三阶', '四阶', '五阶'];
+
+/* v12 三档素材（1x/2x/3x），禁止由 1024 缩放 */
+function gemSet(id){
+  const p = 'assets/gem-v12';
+  return `${p}/1x/flavor_${id}.png 1x, ${p}/2x/flavor_${id}.png 2x, ${p}/3x/flavor_${id}.png 3x`;
+}
+function gemImg(d, size = 24){
+  return `<img src="assets/gem-v12/1x/flavor_${d.gem}.png" srcset="${gemSet(d.gem)}" width="${size}" height="${size}" alt="${d.name} 风味钻石">`;
+}
+function gemBadge(d, dark = false){
+  return `<span class="gem-badge${dark ? ' on-dark' : ''}"><span class="gem-tier num">${d.level}</span><span class="recipe-gem">${gemImg(d, 24)}</span></span>`;
+}
+/* 卡片来源标识：官方「盏 · 精编」或用户 DIY */
+function srcBadge(d){
+  return d.diy ? `<span class="badge-diy">DIY</span>` : `<span class="badge-src">盏 · 精编</span>`;
+}
+function gemBlock(d, size = 24, withTier = false){
+  return `<span class="gem-block"><span class="recipe-gem">${gemImg(d, size)}</span>${withTier ? `<i class="gem-name">${TIERS[d.level]}</i>` : ''}</span>`;
+}
+
 /* ============================ 数据 ============================ */
 const DRINKS = [
-  { id:'d13', name:'大都会', en:'Manhattan', img:'d13.jpg', pos:'50% 42%', meta:'4 分钟 · 15%vol · 酸甜平衡', level:2, fam:'威士忌', tags:['酸甜','摇和','经典'] },
-  { id:'d17', name:'螺丝刀', en:'Screwdriver', img:'d17.jpg', pos:'50% 42%', meta:'2 分钟 · 10%vol', level:1, fam:'伏特加', tags:['清爽','直掺'] },
-  { id:'d01', name:'金菲士', en:'Gin Fizz', img:'d01.jpg', pos:'8% 50%', meta:'5 分钟 · 11%vol', level:2, fam:'金酒', tags:['酸甜','摇和','含气'] },
-  { id:'d03', name:'威士忌酸', en:'Whiskey Sour', img:'d03.jpg', pos:'50% 42%', meta:'5 分钟 · 18%vol', level:2, fam:'威士忌', tags:['酸甜','摇和'] },
-  { id:'d09', name:'荔枝马天尼', en:'Lychee Martini', img:'d09.jpg', pos:'50% 0%', meta:'6 分钟 · 16%vol', level:3, fam:'伏特加', tags:['浓郁','摇和','果味'] },
-  { id:'d05', name:'西柚帕洛玛', en:'Grapefruit Paloma', img:'d05.jpg', pos:'50% 50%', meta:'4 分钟 · 12%vol', level:1, fam:'龙舌兰', tags:['清爽','酸甜','含气'] },
-  { id:'d02', name:'自由古巴', en:'Cuba Libre', img:'d02.jpg', pos:'50% 50%', meta:'2 分钟 · 14%vol', level:1, fam:'朗姆', tags:['清爽','直掺','含气'] },
-  { id:'d16', name:'莫吉托', en:'Mojito', img:'d16.jpg', pos:'50% 40%', meta:'5 分钟 · 12%vol', level:2, fam:'朗姆', tags:['清爽','草本','摇和'] },
+  { id:'d13', name:'大都会', en:'Cosmopolitan', img:'d13.jpg', pos:'50% 42%', meta:'4 分钟 · 15%vol · 酸甜平衡', level:2, gem:'r7', fam:'伏特加', tags:['酸甜','摇和','经典'] },
+  { id:'d17', name:'螺丝刀', en:'Screwdriver', img:'d17.jpg', pos:'50% 42%', meta:'2 分钟 · 10%vol', level:1, gem:'r2', fam:'伏特加', tags:['清爽','直掺'], diy:true },
+  { id:'d01', name:'金菲士', en:'Gin Fizz', img:'d01.jpg', pos:'8% 50%', meta:'5 分钟 · 11%vol', level:2, gem:'r1', fam:'金酒', tags:['酸甜','摇和','含气'] },
+  { id:'d03', name:'威士忌酸', en:'Whiskey Sour', img:'d03.jpg', pos:'50% 42%', meta:'5 分钟 · 18%vol', level:2, gem:'r6', fam:'威士忌', tags:['酸甜','摇和'] },
+  { id:'d09', name:'荔枝马天尼', en:'Lychee Martini', img:'d09.jpg', pos:'50% 0%', meta:'6 分钟 · 16%vol', level:3, gem:'r8', fam:'伏特加', tags:['浓郁','摇和','果味'] },
+  { id:'d05', name:'西柚帕洛玛', en:'Grapefruit Paloma', img:'d05.jpg', pos:'50% 50%', meta:'4 分钟 · 12%vol', level:1, gem:'r4', fam:'龙舌兰', tags:['清爽','酸甜','含气'] },
+  { id:'d02', name:'自由古巴', en:'Cuba Libre', img:'d02.jpg', pos:'50% 50%', meta:'2 分钟 · 14%vol', level:1, gem:'r5', fam:'朗姆', tags:['清爽','直掺','含气'], diy:true },
+  { id:'d16', name:'莫吉托', en:'Mojito', img:'d16.jpg', pos:'50% 40%', meta:'5 分钟 · 12%vol', level:2, gem:'r9', fam:'朗姆', tags:['清爽','草本','摇和'] },
 ];
 const BOTTLES = [
   { id:'b05', name:'百加得白朗姆', fam:'朗姆', level:1, amt:'750ml · 40%vol', remain:0.90 },
@@ -146,21 +172,21 @@ function scrHome(){
     <div class="home-hero glass-rim" data-goto="recipe" data-arg="${hero.id}">
       <img src="assets/${hero.img}" style="object-position:${hero.pos}">
       <div class="scrim"></div>
-      <span class="badge-src">盏 · 精编</span>
-      <span class="fly">${icbtn('arrow-right','frost',17,'goto:recipe:'+hero.id)}</span>
-      ${lvBadge(hero.level, 'big')}
+      ${srcBadge(hero)}
+      <span class="fly">${icbtn('arrow-right','frost',17,'goto:recipe:'+hero.id,'查看配方')}</span>
+      ${gemBadge(hero)}
       <div class="copy">
-        <div class="drink-name" style="font-size:27px;line-height:1.16">${hero.name}</div>
+        <div class="drink-name" style="font-size:28px;line-height:1.16">${hero.name}</div>
         <div class="en">${hero.en} · ${hero.meta}</div>
       </div>
     </div>`;
-  const cards2 = quick.map(d => `<div class="vcard glass g20" data-goto="recipe" data-arg="${d.id}">
-      <div class="ph"><img src="assets/${d.img}" style="object-position:${d.pos}"><span class="badge-src">盏 · 精编</span>${lvBadge(d.level,'sq')}</div>
+  const cards2 = quick.map(d => `<div class="vcard surface" data-goto="recipe" data-arg="${d.id}">
+      <div class="ph"><img src="assets/${d.img}" style="object-position:${d.pos}">${srcBadge(d)}${gemBadge(d)}</div>
       <div class="ci"><div class="nm">${d.name}</div><div class="en">${d.en}</div><div class="mt">${d.meta}</div></div>
     </div>`).join('');
 
-  const canmakeCards = DRINKS.filter(d => d.level <= 2).slice(0, 4).map(d => `<div class="vcard glass g20" data-goto="recipe" data-arg="${d.id}">
-      <div class="ph"><img src="assets/${d.img}" style="object-position:${d.pos}"><span class="badge-src">盏 · 精编</span>${lvBadge(d.level,'sq')}</div>
+  const canmakeCards = DRINKS.filter(d => d.level <= 2).slice(0, 4).map(d => `<div class="vcard surface" data-goto="recipe" data-arg="${d.id}">
+      <div class="ph"><img src="assets/${d.img}" style="object-position:${d.pos}">${srcBadge(d)}${gemBadge(d)}</div>
       <div class="ci"><div class="nm">${d.name}</div><div class="en">${d.en}</div><div class="mt">${d.fam} · ${d.tags.slice(0,2).join(' · ')}</div></div>
     </div>`).join('');
 
@@ -172,17 +198,17 @@ function scrHome(){
       <span class="arr"><button class="chip sm" data-home-rot>换一批</button></span>
     </div>
     <div class="grid2 pad">${cards2}</div>
-    <div class="glass g20 pad" style="margin:12px 20px 0;border-radius:20px;padding:10px 14px;display:flex;align-items:center;gap:12px">
-      <span style="width:34px;height:34px;border-radius:50%;background:var(--amber-wash);color:var(--amber-lift);display:flex;align-items:center;justify-content:center">${ic('bottle',18)}</span>
-      <div style="flex:1;min-width:0"><div style="font-size:12.5px;font-weight:600">你的酒库有 ${BOTTLES.length} 瓶 · 可做 12 杯</div><div class="caption" style="margin-top:2px">补 1 瓶红石榴糖浆，再解锁 2 杯</div></div>
-      <span style="color:var(--ink-400);display:flex">${ic('chevron-right',15)}</span>
+    <div class="surface g20 pad" style="margin:12px 20px 0;border-radius:20px;padding:12px 16px;display:flex;align-items:center;gap:12px">
+      <span style="width:36px;height:36px;border-radius:50%;background:var(--amber-wash);color:var(--amber-lift);display:flex;align-items:center;justify-content:center">${ic('bottle',18)}</span>
+      <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600">你的酒库有 ${BOTTLES.length} 瓶 · 可做 7 杯</div><div class="caption" style="margin-top:2px">补 1 瓶红石榴糖浆，再解锁 2 杯</div></div>
+      <span style="color:var(--ink-400);display:flex;min-width:44px;justify-content:center">${ic('chevron-right',15)}</span>
     </div>
   ` : `
-    <div class="pad" style="display:flex;align-items:flex-end;justify-content:space-between;margin-top:-8px">
+    <div class="pad" style="display:flex;align-items:flex-end;justify-content:space-between;margin-top:16px">
       <div class="canmake-head">
-        <div class="canmake-num">12<span>杯配方</span></div>
+        <div class="canmake-num">7<span>杯可做</span></div>
       </div>
-      <span class="caption">默认只看可用基础酒</span>
+      <span class="caption" style="padding-bottom:3px">含 2 杯 DIY · 只看可用基础酒</span>
     </div>
     <div class="grid2 pad" style="margin-top:14px">${canmakeCards}</div>
   `;
@@ -193,24 +219,24 @@ function scrHome(){
         <div class="eyebrow">11 月 4 日 · 上海 · 微醺指数 良</div>
         <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-top:7px">
           <div class="display" style="font-size:30px">今晚喝点什么</div>
-          <div style="display:flex;gap:8px">${icbtn('search','','18','goto:search')}${icbtn('sliders','','18','open-filter')}</div>
+          <div style="display:flex;gap:8px">${icbtn('search','','18','goto:search','搜索')}${icbtn('sliders','','18','open-filter','筛选')}</div>
         </div>
       </div>
-      <div class="searchbar glass g20 pad" style="margin:14px 20px 0" data-goto="search">
+      <button class="searchbar surface pad" style="margin:14px 20px 0;width:calc(100% - 40px)" data-goto="search" aria-label="搜索配方、材料或风味">
         ${ic('search',16,1.6)}<span>搜索配方、材料或风味</span>
-      </div>
+      </button>
       <div class="chips pad" style="padding-top:12px">
-        <span class="chip ${!S.filters.fam.length||S.filters.fam.includes('全部')?'on':''}" data-chip="home-fam" data-v="全部">全部</span>
-        <span class="chip" data-chip="home-fam" data-v="清爽">清爽</span>
-        <span class="chip" data-chip="home-fam" data-v="酸甜">酸甜</span>
-        <span class="chip" data-chip="home-fam" data-v="烈">烈</span>
-        <span class="chip" data-chip="home-fam" data-v="3步内">3 步内</span>
+        <span class="chip ${S.filters.fam.length===0||S.filters.fam.includes('全部')?'on':''}" data-chip data-v="全部">全部</span>
+        <span class="chip ${S.filters.fam.includes('清爽')?'on':''}" data-chip data-v="清爽">清爽</span>
+        <span class="chip ${S.filters.fam.includes('酸甜')?'on':''}" data-chip data-v="酸甜">酸甜</span>
+        <span class="chip ${S.filters.fam.includes('烈')?'on':''}" data-chip data-v="烈">烈</span>
+        <span class="chip ${S.filters.fam.includes('3步内')?'on':''}" data-chip data-v="3步内">3 步内</span>
       </div>
       <div class="pad" style="padding-top:14px">
         <div class="seg ${segOn}">
           <span class="thumb"></span>
-          <button class="${recSeg?'on':''}" data-home-seg="rec">推荐<em>12</em></button>
-          <button class="${!recSeg?'on':''}" data-home-seg="can">我能做的<em>12</em></button>
+          <button class="${recSeg?'on':''}" data-home-seg="rec">推荐<em>8</em></button>
+          <button class="${!recSeg?'on':''}" data-home-seg="can">我能做的<em>7</em></button>
         </div>
       </div>
       ${body}
@@ -223,10 +249,10 @@ function scrHome(){
 function scrSearch(){
   const q = (S.search||'').trim();
   const pool = q ? DRINKS.filter(d => (d.name+d.en+d.fam+d.tags.join(' ')).toLowerCase().includes(q.toLowerCase())) : [];
-  const rows = pool.length ? pool.slice(0,6).map(d => `<button class="result-row glass g20" data-goto="recipe" data-arg="${d.id}">
+  const rows = pool.length ? pool.slice(0,6).map(d => `<button class="result-row surface" data-goto="recipe" data-arg="${d.id}">
     <div class="thumb"><img src="assets/${d.img}" style="object-position:${d.pos}"></div>
-    <div class="inf"><div class="nm">${d.name}<span class="en">· ${d.en}</span></div><div class="mt">${d.fam} · ${d.meta}</div></div>
-    ${lvBadge(d.level,'sq')}
+    <div class="inf"><div class="nm">${d.name}<span style="font-family:var(--serif);font-size:11.5px;color:var(--ink-300);font-weight:400">· ${d.en}</span></div><div class="mt">${d.fam} · ${d.meta}</div></div>
+    ${gemBadge(d, true)}
   </button>`).join('') : '';
   const recent = q ? '' : `<div class="pad" style="padding-top:20px">
     <div class="sec-head"><span class="h2">热门搜索</span></div>
@@ -244,12 +270,12 @@ function scrSearch(){
     <div class="screen">
       <div style="padding-top:0;height:0"></div>
       ${navbar('搜索', true)}
-      <div style="padding:48px 20px 0">
-        <div class="searchbar glass g20 field" style="margin-bottom:14px">
-          ${ic('search',16,1.6)}<input id="qfield" placeholder="${q||'配方、材料、风味'}" value="${q}" autofocus />
+      <div style="padding:110px 20px 0">
+        <div class="searchbar surface field" style="margin-bottom:14px">
+          ${ic('search',16,1.6)}<input id="qfield" aria-label="搜索配方、材料或风味" enterkeyhint="search" placeholder="${q||'配方、材料、风味'}" value="${q}" autofocus />
         </div>
         ${recent}
-        <div style="display:flex;flex-direction:column;gap:8px;padding-top:${q?'60px':'8px'}">${rows}</div>
+        <div style="display:flex;flex-direction:column;gap:8px;padding-top:${q?'16px':'8px'}">${rows}</div>
         ${empty}
         <div style="height:160px"></div>
       </div>
@@ -257,52 +283,35 @@ function scrSearch(){
   `);
 }
 
-/* ============================ 屏幕：酒库 ============================ */
+/* ============================ 屏幕 C2：我的酒（列表） ============================ */
 function scrBottle(){
-  const myOn = S.bottleTab === 'my' || !S.bottleTab;
-  const matOn = S.bottleTab === 'mat';
-  const statHtml = `<div class="solid-amber pad" style="margin:16px 20px 0">
-    <div class="pstat">
-      <div class="cell"><div class="n">6</div><div class="l">藏酒（瓶）</div></div>
-      <div class="cell"><div class="n">9</div><div class="l">材料（件）</div></div>
-      <div class="cell"><div class="n">12</div><div class="l">可做（杯）</div></div>
-    </div>
-  </div>`;
-  const bottlesHtml = `<div class="gcard glass g24" style="margin:12px 20px 0">
-    ${BOTTLES.map((b,i,arr)=>{
-      const first = BOTTLES.filter(x=>x.fam===b.fam)[0] === b;
-      return `
-        ${first ? `<div style="font-size:10px;letter-spacing:1.2px;color:var(--ink-400);padding:10px 15px 2px">${b.fam}</div>` : ''}
-        <button class="vrow" data-goto="bottle-detail" data-arg="${b.id}">
-          <div class="thumb"><img src="assets/${b.id}.jpg" style="object-position:50% 50%"></div>
-          <div class="inf">
-            <div class="nm">${b.name}</div>
-            <div class="mt">${b.amt}</div>
-            <div class="progress" style="margin-top:6px"><i style="width:${Math.round(b.remain*100)}%"></i></div>
-          </div>
-          <div class="rt">${lvBadge(b.level,'sq')}<span class="small">余 ${Math.round(b.remain*100)}%</span></div>
-        </button>
-        ${i<arr.length-1?'<div class="divider"></div>':''}`;
-    }).join('')}
-  </div>`;
-
+  const fams = ['朗姆','威士忌','金酒','伏特加'];
   return frame(`
     <div class="screen">
-      <div class="pad topgap">
-        <div class="eyebrow">MY BAR</div>
-        <div style="display:flex;align-items:flex-end;justify-content:space-between;margin-top:5px">
-          <div class="display" style="font-size:29px">酒库</div>
-          ${icbtn('plus','','18','goto:bottle-detail:b05')}
-        </div>
+      ${navbar('我的酒', true, `<button class="navact" style="width:auto;padding:0 6px;font-size:15px;color:var(--amber-lift)">编辑</button>`)}
+      <div class="pad" style="padding-top:108px;display:flex;align-items:center;justify-content:space-between">
+        <div class="small">4 瓶 · 已入库</div>
+        <button class="chip sm" data-goto="addwine">${ic('plus',13,'2')} 添加酒</button>
       </div>
-      ${statHtml}
-      <div class="chips pad" style="padding:12px 20px 0">
-        <span class="chip ${myOn?'on':''}" data-bottle-tab="my">我的酒 6</span>
-        <span class="chip ${matOn?'on':''}" data-bottle-tab="mat">材料 9</span>
-        <span class="chip ${S.bottleTab==='fav'?'on':''}" data-bottle-tab="fav">收藏 12</span>
+      <div class="pad" style="padding-top:14px">
+        ${fams.map(f=>{
+          const arr = BOTTLES.filter(b=>b.fam===f);
+          return `<div class="gcard surface g24" style="margin-bottom:12px">
+            <div class="grp-lb">${f} · ${arr.length} 瓶</div>
+            ${arr.map((b,i)=>`
+              <button class="vrow" data-goto="bottle-detail" data-arg="${b.id}">
+                <div class="thumb"><img src="assets/${b.id}.jpg"></div>
+                <div class="inf">
+                  <div class="nm">${b.name}</div>
+                  <div class="mt">${b.amt}</div>
+                </div>
+                <div class="rt">${lvBadge(b.level,'sq')}</div>
+              </button>
+              ${i<arr.length-1?'<div class="divider"></div>':''}`).join('')}
+          </div>`;
+        }).join('')}
       </div>
-      ${bottlesHtml}
-      <div style="height:130px"></div>
+      <div style="height:40px"></div>
     </div>
   `);
 }
@@ -310,34 +319,35 @@ function scrBottle(){
 /* ============================ 屏幕：酒款详情 ============================ */
 function scrBottleDetail(id){
   const b = BOTTLES.find(x=>x.id===id) || BOTTLES[0];
-  const sampleDrinks = DRINKS.filter(d=>d.level<=Math.max(b.level+1,2)).slice(0,4);
+  const sampleDrinks = DRINKS.filter(d=>d.fam===b.fam);
   return frame(`
     <div class="screen">
       <div class="bottle-hero"><img src="assets/${b.id}.jpg"><div class="veil"></div></div>
-      ${navbar('酒款详情', true, `<span style="color:#fff;display:flex">${ic('heart',18)}</span>`)}
+      ${navbar('酒款详情', true, `<span class="navact" aria-hidden="true">${ic('heart',18)}</span>`)}
       <div style="position:relative;margin-top:-40px;z-index:5">
         <div class="pad">
           <div style="display:flex;align-items:flex-end;justify-content:space-between">
             <div style="flex:1;min-width:0">
               <div class="eyebrow">${b.fam}</div>
               <div class="h1 drink-name" style="margin-top:6px">${b.name}</div>
-              <div class="small" style="margin-top:4px;color:rgba(255,255,255,.72)">${b.amt}</div>
+              <div class="small" style="margin-top:4px;color:rgba(255,255,255,.88)">${b.amt}</div>
             </div>
             <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
               ${lvBadge(b.level,'big')}
               <div class="small">等级 ${b.level}/5</div>
             </div>
           </div>
-          <div class="glass g20 r20" style="margin-top:18px;padding:14px">
+          <div class="surface g20 r20" style="margin-top:18px;padding:14px 16px">
             <div class="sec-head"><span class="h2">风味画像</span></div>
             <div style="display:flex;flex-direction:column;gap:6px">
               ${segbar('浓郁',3)}${segbar('香草',2)}${segbar('烘烤',1)}${segbar('木香',2)}
             </div>
           </div>
-          <div style="padding-top:22px">${secHead('可做配方', '6 杯')}</div>
-          <div class="grid2" style="gap:12px">
-            ${sampleDrinks.map(d=>`<button class="vcard glass g20" data-goto="recipe" data-arg="${d.id}">
-              <div class="ph"><img src="assets/${d.img}" style="object-position:${d.pos}">${lvBadge(d.level,'sq')}</div>
+          <div style="padding-top:22px">${secHead('用这瓶能做的', `${sampleDrinks.length} 杯`)}</div>
+          ${sampleDrinks.length===0?`<div class="caption">这瓶暂时没有匹配配方，去酒圈看看别人怎么调。</div>`:''}
+          <div class="grid2" style="gap:12px${sampleDrinks.length===1?';grid-template-columns:1fr':''}">
+            ${sampleDrinks.map(d=>`<button class="vcard surface" data-goto="recipe" data-arg="${d.id}">
+              <div class="ph"><img src="assets/${d.img}" style="object-position:${d.pos}">${srcBadge(d)}${gemBadge(d)}</div>
               <div class="ci"><div class="nm">${d.name}</div><div class="mt">${d.meta}</div></div>
             </button>`).join('')}
           </div>
@@ -347,8 +357,8 @@ function scrBottleDetail(id){
     </div>
     <div class="ctabar glass g28">
       <div style="display:flex;gap:10px">
-        <button class="btn secondary" style="flex:0 0 112px">我也想试试</button>
-        <button class="btn primary" style="flex:1" data-act="none">加进我的酒库</button>
+        <button class="btn secondary" style="flex:0 0 auto;padding:0 18px" data-act="none">编辑库存</button>
+        <button class="btn primary" style="flex:1" data-goto="flow" data-arg="${b.id==='b02'?'d03':'d13'}">用它调一杯</button>
       </div>
     </div>
   `);
@@ -359,7 +369,7 @@ function scrRecipe(id){
   const d = DRINKS.find(x=>x.id===id) || DRINKS[0];
   S.recipeStep = 0; S.doneStep = new Set();
   const mats = [
-    ['波本威士忌', '60ml', true, ''],
+    ['威士忌', '60ml', true, ''],
     ['黄柠檬汁', '30ml', true, ''],
     ['单糖浆', '15ml', false, '可用蜂蜜 10ml 替代'],
     ['蛋清', '1 个', false, '可选'],
@@ -376,37 +386,39 @@ function scrRecipe(id){
   return frame(`
     <div class="screen">
       <div class="recipe-hero"><img src="assets/${d.img}" style="object-position:${d.pos}"><div class="veil"></div></div>
-      ${navbar('配方详情', true, `<span style="color:#fff">${ic('share',17)}</span><span style="color:#fff">${ic('heart',17)}</span>`)}
+      ${navbar('配方详情', true, `<span class="navact" aria-hidden="true">${ic('share',17)}</span><span class="navact" aria-hidden="true">${ic('heart',17)}</span>`)}
       <div style="position:relative;margin-top:-40px;z-index:5">
         <div class="pad">
           <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:14px">
             <div style="flex:1;min-width:0">
               <div class="drink-name" style="font-size:28px;line-height:1.16">${d.name}</div>
-              <div class="small" style="margin-top:4px;color:rgba(255,255,255,.74)">${d.en} · ${d.fam} · ${d.meta}</div>
+              <div class="small" style="margin-top:4px;color:rgba(255,255,255,.88)">${d.en} · ${d.fam} · ${d.meta}</div>
             </div>
-            ${lvBadge(d.level,'big')}
           </div>
-          <div style="display:flex;gap:6px;margin-top:10px">
-            ${d.tags.map(t=>`<span class="chip on sm" style="height:22px;padding:0 9px;font-size:10px;border-radius:11px">${t}</span>`).join('')}
+          <div style="display:flex;gap:8px;margin-top:10px">
+            ${d.tags.map(t=>`<span class="chip sm" style="height:24px;padding:0 9px;font-size:11px;border-radius:12px">${t}</span>`).join('')}
           </div>
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:14px">
-            <div class="stat-tile glass g20"><span class="lb">难度等级</span><span class="vl">${lvMeter(d.level)}</span></div>
-            <div class="stat-tile glass g20"><span class="lb">用时</span><span class="vl">${ic('clock',14,'1.5')}5 分钟</span></div>
-            <div class="stat-tile glass g20"><span class="lb">口碑</span><span class="vl">${icf('star',13)}4.8<small style="color:var(--ink-300);font-weight:400">·312</small></span></div>
+            <div class="stat-tile surface"><span class="lb">难度等级</span><span class="vl">${lvMeter(d.level)}</span></div>
+            <div class="stat-tile surface"><span class="lb">用时</span><span class="vl">${ic('clock',14,'1.5')}5 分钟</span></div>
+            <div class="stat-tile surface"><span class="lb">口碑</span><span class="vl">${icf('star',13)}4.8<small style="color:var(--ink-300);font-weight:400">·312</small></span></div>
           </div>
           <div style="padding-top:18px">
-            ${secHead('风味','平衡型')}
+            <div class="sec-head">
+              <span class="h2">风味</span>
+              <span class="gem-flavor">${gemBlock(d,24)}<em class="caption">${TIERS[d.level]} · 难度</em></span>
+            </div>
             <div style="display:flex;flex-direction:column;gap:6px">
               ${segbar('酸度',4)}${segbar('甜度',2)}${segbar('酒精感',3)}${segbar('圆润',2)}
             </div>
           </div>
           <div style="padding-top:18px">
             ${secHead('材料','4 项 · 酒库已有 2 项')}
-            <div class="gcard glass g24" style="padding:3px 15px">
+            <div class="gcard surface g24" style="padding:3px 16px">
               ${mats.map(([n,q,ok,note],i)=>`
                 <div class="mat-row">
                   <span style="flex:0 0 auto;color:${ok?'var(--amber-lift)':'var(--ink-300)'};display:flex">${ic(ok?'check':'alert',15,1.8)}</span>
-                  <span style="font-size:12.5px;font-weight:500">${n}</span>
+                  <span style="font-size:13px;font-weight:500">${n}</span>
                   <span class="qty">${q}</span>
                   <span class="note" style="${ok?'color:#7ED957':'color:var(--amber-lift)'}">${note||(ok?'酒库有':'')}</span>
                 </div>
@@ -416,12 +428,12 @@ function scrRecipe(id){
           <div style="padding-top:18px">
             ${secHead('步骤','共 '+steps.length+' 步')}
             <div style="display:flex;flex-direction:column;gap:7px">
-              ${steps.map((s,i)=>`<div style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--ink-600)">
-                <span class="num" style="color:var(--ink-300);font-size:11px;width:16px">0${i+1}</span>${s}</div>`).join('')}
+              ${steps.map((s,i)=>`<div style="display:flex;align-items:center;gap:10px;font-size:13px;color:var(--ink-600)">
+                <span class="num" style="color:var(--ink-300);font-size:11.5px;width:16px">0${i+1}</span>${s}</div>`).join('')}
             </div>
           </div>
           <div style="padding-top:22px">${secHead('留言')}</div>
-          <div class="glass g20 r18" style="padding:12px 14px">
+          <div class="surface g20 r18" style="padding:12px 16px">
             ${comments.map(([av,nm,txt,body])=>`<div class="cm"><img src="assets/${av}"><div style="flex:1;min-width:0"><div class="who">${nm}<span>· ${txt}</span></div><div class="txt">${body}</div></div></div>`).join('')}
           </div>
           <div style="height:190px"></div>
@@ -430,7 +442,7 @@ function scrRecipe(id){
     </div>
     <div class="ctabar glass g28">
       <div style="display:flex;gap:10px">
-        <button class="btn secondary" style="flex:0 0 112px" data-act="none">手动标记已完成</button>
+        <button class="btn secondary" style="flex:0 0 auto;padding:0 18px" data-act="none">手动标记已完成</button>
         <button class="btn primary" style="flex:1" data-act="none" data-goto="flow" data-arg="${d.id}">开调 →</button>
       </div>
     </div>
@@ -453,11 +465,11 @@ function scrFlow(id){
     return frame(`
       <div class="screen">
         <div style="padding-top:58px"></div>
-        <div class="pad glass g26" style="border-radius:22px">
+        <div class="pad surface g26" style="border-radius:22px;padding:28px 24px">
           <div class="done-card">
             <div class="ring">${ic('glass',28)}</div>
             <div class="drink-name" style="font-size:22px;line-height:1.2">恭喜你调出了<br>${d.name}</div>
-            <div class="small" style="margin-top:8px;color:rgba(255,255,255,.68)">用了 ${lvMeter(d.level)} 级酒 · 4 步 · 5 分钟</div>
+            <div class="small" style="margin-top:8px;color:rgba(255,255,255,.85)">用了 ${lvMeter(d.level)} 级酒 · 4 步 · 5 分钟</div>
             <div style="display:flex;gap:10px;margin-top:20px;justify-content:center">
               <button class="btn primary" data-goto="home">存到我的调酒</button>
               <button class="btn secondary" data-goto="chat">发一条到酒圈</button>
@@ -480,7 +492,7 @@ function scrFlow(id){
   return frame(`
     <div class="screen">
       ${navbar('制作流程 · '+d.name, true)}
-      <div class="pad" style="padding-top:14px">
+      <div class="pad" style="padding-top:110px">
         <div class="steps-rail">${dots}</div>
       </div>
       <div class="flow-photo"><img src="assets/${d.img}" style="object-position:${d.pos}"><div class="veil"></div></div>
@@ -529,13 +541,13 @@ function scrFeed(){
             <div class="eyebrow">COMMUNITY</div>
             <div class="display" style="font-size:29px;margin-top:5px">酒圈</div>
           </div>
-          ${icbtn('camera','','18','goto:comment')}
+          ${icbtn('camera','','18','goto:comment','发布')}
         </div>
-        <div class="glass g20" style="margin:14px 0 0;height:44px;border-radius:22px;display:flex;align-items:center;gap:20px;padding:0 18px">
-          <button data-feed-seg="f" style="font-size:12.5px;color:${S.feedSeg==='f'?'var(--ink-900)':'var(--ink-400)'};font-weight:${S.feedSeg==='f'?'600':'400'}">关注</button>
-          <button data-feed-seg="rec" style="font-size:12.5px;color:${S.feedSeg==='rec'?'var(--ink-900)':'var(--ink-400)'};font-weight:${S.feedSeg==='rec'?'600':'400'};position:relative">推荐${S.feedSeg==='rec'?`<i style="position:absolute;left:50%;transform:translateX(-50%);bottom:-8px;width:16px;height:2px;border-radius:1px;background:var(--amber-lift);display:block"></i>`:''}</button>
-          <button data-feed-seg="n" style="font-size:12.5px;color:${S.feedSeg==='n'?'var(--ink-900)':'var(--ink-400)'};font-weight:${S.feedSeg==='n'?'600':'400'}">最新</button>
-          <button data-act="open-filter" style="margin-left:auto;font-size:10.5px;color:var(--ink-400);display:inline-flex;align-items:center;gap:3px;background:none">${ic('sliders',13,1.5)}筛选</button>
+        <div class="surface feedbar" style="margin:14px 0 0">
+          <button class="${S.feedSeg==='f'?'on':''}" data-feed-seg="f">关注</button>
+          <button class="${S.feedSeg==='rec'?'on':''}" data-feed-seg="rec">推荐</button>
+          <button class="${S.feedSeg==='n'?'on':''}" data-feed-seg="n">最新</button>
+          <button data-act="open-filter" aria-label="筛选">${ic('sliders',13,1.5)}筛选</button>
         </div>
       </div>
       <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:4px 20px 0">
@@ -552,9 +564,9 @@ function scrComment(postId){
   const p = POSTS.find(x=>x.id===postId) || POSTS[0];
   const d = DRINKS.find(x=>x.id===p.recipeId) || DRINKS[0];
   const comments = [
-    ['a2.jpg','居家微醺','3 天前','第一次做，蜂蜜替代糖浆太咸了，不如干脆放弃。'],
-    ['a5.jpg','阿 May 调酒记','3 天前','蛋清先干摇再摇和，口感会更绵。冰杯提前放冰箱 15 分钟，喝完最后一滴都不会淡。'],
-    ['a8.jpg','盏盏','1 周前','干摇好难啊，我摇了 20 秒才有点意思。'],
+    ['a2.jpg','居家微醺','3 天前','第一次做，荔枝罐头汁放多了有点甜，下次减到 20ml。'],
+    ['a5.jpg','阿 May 调酒记','3 天前','冰块一定要多加，摇和 12 秒就够；杯口擦一圈柠檬皮会更香。'],
+    ['a8.jpg','盏盏','1 周前','试了两次，把伏特加换成金酒也好喝，杜松子香更明显。'],
   ];
   return frame(`
     <div class="screen">
@@ -570,29 +582,29 @@ function scrComment(postId){
             </div>
             <button class="chip on sm" style="height:28px">关注</button>
           </div>
-          <div style="font-size:13px;line-height:1.75;color:var(--ink-600);margin-top:14px">${p.title}<br>冰杯提前放冰箱 15 分钟，喝完最后一滴都不会淡。摇壶先不放冰干摇 10 秒，让蛋清充分乳化，是口感绵的关键。</div>
+          <div style="font-size:13px;line-height:1.75;color:var(--ink-600);margin-top:14px">${p.title}<br>冰杯提前放冰箱 15 分钟，喝完最后一滴都不会淡。荔枝罐头的水别倒，和伏特加 1:1 兑进去更香；摇和 12 秒就够。</div>
           <div style="margin-top:14px">${secHead('关联配方','用了 1 款')}</div>
-          <button class="vcard glass g20" style="text-align:left" data-goto="recipe" data-arg="${d.id}">
-            <div class="ph" style="height:112px"><img src="assets/${d.img}" style="object-position:${d.pos}"><span class="badge-src">盏 · 精编</span>${lvBadge(d.level,'sq')}</div>
+          <button class="vcard surface" style="text-align:left;width:100%" data-goto="recipe" data-arg="${d.id}">
+            <div class="ph" style="height:100px"><img src="assets/${d.img}" style="object-position:${d.pos}">${srcBadge(d)}${gemBadge(d)}</div>
             <div class="ci"><div class="nm">${d.name}</div><div class="en">${d.en}</div><div class="mt">${d.fam} · ${d.meta}</div></div>
           </button>
         </div>
         <div style="padding-top:16px">${secHead('评论','3 条')}</div>
-        <div class="glass g24" style="border-radius:20px;padding:0 14px">
+        <div class="surface g24" style="border-radius:20px;padding:0 16px">
           ${comments.map(([av,nm,txt,body])=>`<div class="cm"><img src="assets/${av}"><div style="flex:1;min-width:0"><div class="who">${nm}<span>· ${txt}</span></div><div class="txt">${body}</div></div></div>`).join('')}
         </div>
         <div style="height:200px"></div>
       </div>
     </div>
     <div class="ctabar glass g28" style="bottom:16px">
-      <div style="display:flex;align-items:center;gap:14px;margin-bottom:10px">
-        <button class="actbar"><button class="${S.heartOn?'on':''}" data-heart>${ic('heart',15,'1.6')}${S.heartOn?p.likes+1:p.likes}</button>
-        <button class="actbar"><button>${ic('comment',15,'1.6')}12</button>
-        <button class="actbar"><button>${ic('share',15,'1.6')}</button>
+      <div class="actbar" style="margin-bottom:8px">
+        <button class="${S.heartOn?'on':''}" data-heart aria-label="点赞">${ic('heart',16,'1.6')}${S.heartOn?p.likes+1:p.likes}</button>
+        <button aria-label="评论">${ic('comment',16,'1.6')}12</button>
+        <button aria-label="分享">${ic('share',16,'1.6')}</button>
       </div>
       <div class="comment-tray">
-        <span class="field glass g20">说点什么…</span>
-        ${icbtn('send','frost',17,'none')}
+        <span class="field surface">说点什么…</span>
+        ${icbtn('send','frost',17,'none','发送评论')}
       </div>
     </div>
   `);
@@ -606,23 +618,23 @@ function scrMe(){
         <div class="eyebrow">PROFILE</div>
         <div class="display" style="font-size:29px;margin-top:5px">我的</div>
       </div>
-      <div class="glass g24 pad" style="margin:16px 20px 0;border-radius:22px;padding:14px;display:flex;align-items:center;gap:13px">
-        <img class="avatar" src="assets/a8.jpg" style="width:56px;height:56px">
+      <div class="surface g24 pad" style="margin:16px 20px 0;border-radius:22px;padding:14px;display:flex;align-items:center;gap:13px">
+        <img class="avatar" src="assets/a3.jpg" style="width:56px;height:56px">
         <div style="flex:1;min-width:0">
-          <div style="font-size:17px;font-weight:600;letter-spacing:-.3px">居家调酒练习生</div>
-          <div class="caption" style="margin-top:4px">已绑定 Apple 邮箱 l***@163.com</div>
+          <div style="font-size:17px;font-weight:600;letter-spacing:-.3px">杯中物</div>
+          <div class="caption" style="margin-top:4px">2026 年 8 月加入 · l***@163.com</div>
           <div style="display:flex;gap:6px;margin-top:6px">${lvBadge(3,'big')}</div>
         </div>
-        ${icbtn('more','',17,'none')}
+        ${icbtn('more','',17,'none','更多')}
       </div>
-      <div class="glass g20 pad" style="margin:12px 20px 0;border-radius:20px;padding:14px 6px;display:flex">
-        ${[['28','调酒'],['46','收藏'],['12','帖子']].map(([n,lb],i)=>`<div style="flex:1;text-align:center;${i>0?'border-left:1px solid rgba(255,255,255,.09)':''}"><div class="num" style="font-size:23px;font-weight:600;line-height:1">${n}</div><div style="font-size:10px;color:var(--ink-400);margin-top:6px">${lb}</div></div>`).join('')}
+      <div class="surface g20 pad" style="margin:12px 20px 0;border-radius:20px;padding:14px 6px;display:flex">
+        ${[['4','我的酒'],['8','我的调酒'],['8','收藏']].map(([n,lb],i)=>`<div style="flex:1;text-align:center;${i>0?'border-left:1px solid rgba(255,255,255,.09)':''}"><div class="num" style="font-size:23px;font-weight:600;line-height:1">${n}</div><div style="font-size:11px;color:var(--ink-400);margin-top:6px">${lb}</div></div>`).join('')}
       </div>
       <div class="sec-head pad" style="margin:14px 20px 8px"><span class="h2">口味偏好</span></div>
-      <div class="gcard glass g24 pad" style="margin:0 20px">
+      <div class="gcard surface g24 pad" style="margin:0 20px">
         <div class="pref-row" style="height:auto;padding-top:12px;padding-bottom:12px">
           <span style="width:20px;color:var(--ink-400);display:flex">${ic('leaf',19)}</span>
-          <span style="font-size:12.5px">我的常选风味</span>
+          <span style="font-size:13px">我的常选风味</span>
           <div class="chips" style="margin-left:auto;gap:5px">
             <span class="chip on sm">酸甜</span><span class="chip sm">清爽</span><span class="chip sm">低度</span>
           </div>
@@ -630,13 +642,13 @@ function scrMe(){
         <div class="divider"></div>
         <div class="pref-row">
           <span style="width:20px;color:var(--ink-400);display:flex">${ic('bell',19)}</span>
-          <span style="font-size:12.5px;flex:1">消息通知</span>
+          <span style="font-size:13px;flex:1">消息通知</span>
           <span class="toggle on"></span>
         </div>
       </div>
       <div class="sec-head pad" style="margin:12px 20px 8px"><span class="h2">我的内容</span></div>
-      <div class="gcard glass g24 pad" style="margin:0 20px">
-        ${[['glass','我的调酒','28 杯','flow'],['doc','我的帖子','12 条','chat'],['star','勋章','4 枚','me'],['gear','设置','','me']].map(([i,t,v,g],idx)=>`
+      <div class="gcard surface g24 pad" style="margin:0 20px">
+        ${[['glass','我的调酒','8 杯','history'],['doc','我的帖子','1 条','chat'],['star','勋章','4 枚','me'],['gear','设置','','settings']].map(([i,t,v,g],idx)=>`
           ${idx?'<div class="divider"></div>':''}
           <button class="list-row" data-goto="${g}">
             <span class="ic">${ic(i,19)}</span><span class="tx">${t}</span>
@@ -645,7 +657,7 @@ function scrMe(){
           </button>
         `).join('')}
       </div>
-      <div class="caption num" style="text-align:center;margin-top:22px;color:var(--ink-300)">盏 v6.0 · 适量饮酒</div>
+      <div class="caption num" style="text-align:center;margin-top:22px;color:var(--ink-300)">盏 1.0.0 · 适量饮酒</div>
       <div style="height:130px"></div>
     </div>
   `);
@@ -674,17 +686,17 @@ function filterSheet(){
     </button>`;
   }).join('');
   return `
-    <div class="sheet-wrap on" data-close-sheet>
-      <div class="sheet-bd"></div>
-      <div class="sheet glass g28">
+    <div class="sheet-wrap on">
+      <div class="sheet-bd" data-close-sheet></div>
+      <div class="sheet glass g28" role="dialog" aria-modal="true" aria-label="筛选配方">
         <div class="grab"></div>
         <div class="sh-head">
           <button class="btn ghost" data-filter-reset>重置</button>
-          <div class="h2" style="font-size:14.5px">筛选配方</div>
+          <div class="h2" style="font-size:15px">筛选配方</div>
           <button class="btn ghost" data-close-sheet>关闭</button>
         </div>
         <div class="sh-body">
-          <div class="frow"><div class="flb"><b>基酒家族</b><span>${famSel.length||'0'} 项</span></div>
+          <div class="frow"><div class="flb"><b>基酒家族</b><span>${famSel.includes('全部')?'0':famSel.length} 项</span></div>
             <div class="chips">${fams.map(f=>`<button class="chip ${famSel.includes(f)?'on':''}" data-filter="fam" data-v="${f}">${f}</button>`).join('')}</div>
           </div>
           <div class="frow"><div class="flb"><b>风味</b><span>${flavorSel.length||'0'} 项</span></div>
@@ -702,14 +714,14 @@ function filterSheet(){
         </div>
         <div class="sh-foot">
           <button class="btn secondary" data-filter-reset>重置</button>
-          <button class="btn primary" data-filter-confirm>确认 · 命中 12 杯</button>
+          <button class="btn primary" data-filter-confirm>确认 · 命中 8 杯</button>
         </div>
       </div>
     </div>
   `;
 }
 
-function statHtml(lb, val){ return `<div class="stat-tile glass g20"><span class="lb">${lb}</span><span class="vl">${val}</span></div>`; }
+function statHtml(lb, val){ return `<div class="stat-tile surface"><span class="lb">${lb}</span><span class="vl">${val}</span></div>`; }
 function segbar(label, val){
   let segs = '';
   for (let i=1;i<=5;i++) segs += `<i class="${i<=val?'on':''}"></i>`;
@@ -762,7 +774,13 @@ function attachSheet(){
   if (!v) return;
   const old = v.querySelector('.sheet-wrap');
   if (old) old.remove();
-  if (_sheetOpen) v.insertAdjacentHTML('beforeend', filterSheet());
+  if (_sheetOpen) {
+    const kind = S.sheetKind || 'filter';
+    const html = kind === 'report' ? reportSheet() : kind === 'done' ? doneSheet() : filterSheet();
+    v.insertAdjacentHTML('beforeend', html);
+  }
+  const fr = document.querySelector('.frame');
+  if (fr) fr.classList.toggle('sheet-open', _sheetOpen);
 }
 
 /* ============================ 事件 ============================ */
@@ -787,7 +805,7 @@ function attachHandlers(){
 
 function onAnyClick(e){
   const t = e.target;
-  const btn = t.closest('button, [data-goto], [data-act], [data-home-seg], [data-home-fam], [data-filter], [data-single], [data-filter-reset], [data-filter-confirm], [data-feed-seg], [data-bottle-tab], [data-flow-step], [data-flow-next], [data-flow-prev], [data-search-set], [data-home-rot], [data-heart], [data-close-sheet], [data-back]');
+  const btn = t.closest('button, [data-chip], [data-goto], [data-act], [data-home-seg], [data-home-fam], [data-filter], [data-single], [data-filter-reset], [data-filter-confirm], [data-feed-seg], [data-bottle-tab], [data-flow-step], [data-flow-next], [data-flow-prev], [data-search-set], [data-home-rot], [data-heart], [data-close-sheet], [data-back]');
   if (!btn) return;
 
   if (btn.matches('[data-back]')) { back(); return; }
@@ -808,9 +826,9 @@ function onAnyClick(e){
     S.filters = { fam:[], flavor:[], strength:[], level:[], src:[] };
     attachSheet(); return;
   }
-  if (btn.matches('[data-filter-confirm]')) { toast('已应用筛选 · 命中 12 杯'); _sheetOpen = false; attachSheet(); goto('home', '', null, true); return; }
+  if (btn.matches('[data-filter-confirm]')) { toast('已应用筛选 · 命中 8 杯'); _sheetOpen = false; attachSheet(); goto('home', '', null, true); return; }
   if (btn.matches('[data-home-seg]')) { S.homeSeg = btn.dataset.homeSeg; goto('home'); return; }
-  if (btn.matches('[data-home-fam]')) {
+  if (btn.matches('[data-home-fam],[data-chip]')) {
     const v = btn.dataset.v;
     if (v === '全部') S.filters.fam = ['全部'];
     else { S.filters.fam = S.filters.fam.filter(x=>x!=='全部'); if (!S.filters.fam.includes(v)) S.filters.fam.push(v); }

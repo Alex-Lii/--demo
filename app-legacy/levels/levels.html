@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>盏 · 等级方案规格页</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<style>
+:root{
+  --bg:#17181C;--bg-deep:#121318;
+  --ink-900:#FFF;--ink-600:#C9CBD3;--ink-400:#9598A2;--ink-300:#9B9FAA;
+  --amber:#B07A4A;--amber-lift:#D3A171;
+  --lv1:#9C7355;--lv2:#BF8E6A;--lv3:#DFAB86;--lv4:#F7C8A7;--lv5:#FFE4CA;
+  --gem-l1:#C79F62;--gem-l2:#63859F;--gem-l3:#47705B;--gem-l4:#7C3443;--gem-l5:#2D2833;
+  --gb:20px;--gs:190%;
+  --glass-tint:rgba(48,46,53,.20);--edge:rgba(255,255,255,.22);
+  --hi:rgba(255,255,255,.66);--lo:rgba(0,0,0,.34);
+  --sans:-apple-system,'Inter','PingFang SC','Helvetica Neue',sans-serif;
+  --serif:Georgia,'Songti SC','STSong',serif;
+}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-font-smoothing:antialiased}
+html,body{background:#0B0C0F;color:#fff;font-family:var(--sans);line-height:1.6}
+a{color:var(--amber-lift);text-decoration:none}
+
+body{
+  min-height:100vh;padding:72px 48px 120px;position:relative;
+  background:
+    radial-gradient(56% 40% at 12% 12%, rgba(176,122,74,.10) 0%, rgba(176,122,74,0) 68%),
+    radial-gradient(42% 34% at 88% 90%, rgba(120,148,200,.06) 0%, rgba(120,148,200,0) 72%),
+    #0B0C0F;
+}
+
+/* 顶部 */
+.hd{max-width:1080px;margin:0 auto 56px}
+.ey{font-size:10.5px;font-weight:500;letter-spacing:2px;color:#6E6F78;text-transform:uppercase}
+.ht{font-size:58px;font-weight:600;letter-spacing:-1.8px;line-height:1.08;margin-top:8px}
+.ht em{font-style:normal;font-family:var(--serif);color:var(--amber-lift);letter-spacing:.2px}
+.hs{font-size:14px;line-height:1.8;color:#9598A2;margin-top:14px;max-width:680px}
+
+.back{display:inline-flex;align-items:center;gap:6px;font-size:12px;color:#84858F;margin-bottom:22px}
+
+/* 玻璃卡片 */
+.glass{
+  position:relative;border-radius:22px;padding:28px 30px;
+  background-color:var(--glass-tint);
+  background-image:
+    linear-gradient(180deg,rgba(255,255,255,.08) 0%,rgba(255,255,255,0) 46%,rgba(255,255,255,.03) 100%),
+    linear-gradient(152deg,rgba(255,255,255,.08) 0%,rgba(255,255,255,.02) 22%,rgba(255,255,255,0) 54%,rgba(255,255,255,.03) 100%);
+  -webkit-backdrop-filter:blur(var(--gb)) saturate(var(--gs));backdrop-filter:blur(var(--gb)) saturate(var(--gs));
+  border:1px solid var(--edge);
+  box-shadow:0 0 0 .5px rgba(255,255,255,.12),inset 0 1px 0 var(--hi),inset 0 -1px 0 var(--lo),var(--shadow);
+}
+.glass::before,.glass::after{display:none}
+
+.grid{max-width:1080px;margin:0 auto;display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:16px}
+.col-6{grid-column:span 6}
+.col-12{grid-column:span 12}
+@media(max-width:900px){.col-6,.col-12{grid-column:span 12}}
+
+h2.sc{font-size:12px;letter-spacing:2.4px;color:var(--amber-lift);font-weight:600;margin-bottom:12px}
+h3{font-size:22px;font-weight:600;letter-spacing:-.5px;margin-top:4px}
+.sub{font-size:12.5px;color:var(--ink-400);margin-top:8px;line-height:1.7}
+
+/* 色板行 */
+.palette{display:flex;gap:10px;margin-top:18px;flex-wrap:wrap}
+.sw{
+  position:relative;width:calc(20% - 8px);min-width:140px;border-radius:18px;overflow:hidden;
+  display:flex;flex-direction:column;aspect-ratio:1/1;padding:14px;justify-content:flex-end;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(0,0,0,.20);
+}
+.sw::after{
+  content:'';position:absolute;inset:0;pointer-events:none;
+  background:linear-gradient(122deg,rgba(255,255,255,.22) 0%,rgba(255,255,255,0) 28%,rgba(255,255,255,0) 72%,rgba(0,0,0,.10) 100%);
+  mix-blend-mode:screen;opacity:.7;
+}
+.sw .num{font-size:42px;font-weight:600;letter-spacing:-1.2px;color:rgba(0,0,0,.38);font-variant-numeric:tabular-nums}
+.sw .nm{font-size:11px;font-weight:600;color:rgba(0,0,0,.50);margin-top:4px;letter-spacing:.3px}
+.sw .hex{font-size:10px;color:rgba(0,0,0,.45);font-family:ui-monospace,Menlo,monospace;margin-top:2px;letter-spacing:.5px}
+.sw .lb{position:absolute;top:14px;left:14px;font-size:9px;font-weight:700;letter-spacing:1.6px;color:rgba(0,0,0,.35)}
+
+/* 对比面板 */
+.panel{margin-top:18px}
+.panel .row{display:flex;align-items:center;gap:12px;padding:12px 0;border-top:1px solid rgba(255,255,255,.07)}
+.panel .row:last-child{border-bottom:1px solid rgba(255,255,255,.07)}
+.panel .lv{flex:0 0 80px}
+.panel .bar{flex:1;height:10px;border-radius:5px;background:rgba(255,255,255,.08);overflow:hidden}
+.panel .bar i{display:block;height:100%}
+.panel .val{flex:0 0 80px;font-size:12px;font-variant-numeric:tabular-nums;color:var(--ink-600);text-align:right}
+.panel .val.fail{color:#D68E7A}
+.panel .val.pass{color:#A6D08E}
+
+/* 表格 */
+table{width:100%;border-collapse:collapse;margin-top:18px;font-size:12px}
+th{text-align:left;padding:10px 8px;font-size:10px;letter-spacing:1.2px;color:var(--ink-400);font-weight:600;border-bottom:1px solid rgba(255,255,255,.10)}
+td{padding:10px 8px;border-bottom:1px solid rgba(255,255,255,.07);font-variant-numeric:tabular-nums;color:var(--ink-600)}
+tr:hover td{background:rgba(255,255,255,.02)}
+td.hex{font-family:ui-monospace,Menlo,monospace;letter-spacing:.5px}
+.mini-sq{display:inline-block;width:12px;height:12px;border-radius:3px;vertical-align:-1px;margin-right:6px;box-shadow:inset 0 0 0 .5px rgba(255,255,255,.25)}
+
+/* 演示：在玻璃卡上放等级 */
+.demo-row{display:flex;gap:12px;margin-top:16px}
+.demo-card{
+  position:relative;width:200px;height:120px;border-radius:18px;overflow:hidden;flex:1;background:linear-gradient(135deg,#C08A57,#9E6C40);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.28),0 12px 26px rgba(0,0,0,.35);
+}
+.demo-card img{width:100%;height:100%;object-fit:cover;object-position:50% 42%}
+.demo-card .scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,7,10,.08),rgba(6,7,10,.30))}
+/* 旧方案：gem 图标 */
+.gem-img{position:absolute;top:10px;left:10px;width:28px;height:28px}
+/* 新方案：计量条 badge */
+.lv-badge{
+  position:absolute;top:10px;left:10px;height:24px;padding:0 7px 0 8px;border-radius:12px;
+  display:inline-flex;align-items:center;gap:6px;
+  background-color:rgba(12,13,17,.82);
+  -webkit-backdrop-filter:blur(14px) saturate(190%);backdrop-filter:blur(14px) saturate(190%);
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.30),inset 0 -1px 0 rgba(0,0,0,.30),0 4px 12px rgba(0,0,0,.30);
+  text-shadow:0 1px 2px rgba(0,0,0,.45);
+}
+.meter{display:inline-flex;align-items:center;gap:1.6px}
+.meter i{display:block;width:2.4px;height:10px;border-radius:1.2px;background:rgba(255,255,255,.17)}
+.meter i.on{background:var(--lv);box-shadow:0 0 5px color-mix(in srgb,var(--lv) 45%,transparent)}
+.tx{font-size:9.5px;font-weight:600;letter-spacing:.4px;color:#fff}
+.sq{width:24px;height:24px;padding:0;justify-content:center}
+
+/* 手机外观演示（右侧） */
+.phone{
+  width:190px;height:410px;border-radius:26px;border:1px solid rgba(255,255,255,.10);overflow:hidden;position:relative;flex:0 0 190px;
+  box-shadow:0 20px 44px rgba(0,0,0,.55);
+}
+.phone .inner{
+  position:absolute;inset:0;padding:36px 12px 14px;overflow:hidden;
+  background:
+    radial-gradient(56% 40% at 12% 12%, rgba(176,122,74,.12) 0%, rgba(176,122,74,0) 68%),
+    linear-gradient(180deg,#1E1F25 0%,#17181C 54%,#121318 100%);
+}
+.phone .title{font-size:11px;font-weight:600;color:#F8EBDD}
+.phone .body{font-size:9px;color:#9598A2;margin-top:4px;line-height:1.6}
+.phone .chip{height:22px;padding:0 7px;border-radius:11px;font-size:8.5px;color:#8E909A;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);display:inline-flex;align-items:center}
+.phone .chip.on{color:#F3DCC5;background:rgba(176,122,74,.20);border-color:rgba(211,161,113,.40)}
+.phone .swatch{
+  display:inline-flex;width:14px;height:14px;border-radius:3px;margin:0 3px;
+  box-shadow:inset 0 0 0 .5px rgba(255,255,255,.28),inset 0 0 0 .5px rgba(0,0,0,.18);
+}
+.phone .card-row{display:flex;gap:6px;margin-top:10px}
+.phone .mini-card{width:50px;height:70px;border-radius:8px;overflow:hidden;position:relative;flex:0 0 50px}
+.phone .mini-card img{width:100%;height:100%;object-fit:cover}
+.phone .mini-card .scrim{position:absolute;inset:0;background:linear-gradient(180deg,rgba(6,7,10,.10),rgba(6,7,10,.42))}
+.phone .mini-lv{position:absolute;top:4px;left:4px;height:14px;padding:0 4px;border-radius:7px;display:inline-flex;align-items:center;gap:3px;background:rgba(12,13,17,.80);border:1px solid rgba(255,255,255,.20);box-shadow:inset 0 1px 0 rgba(255,255,255,.28)}
+.phone .mini-lv .meter i{width:1.4px;height:5px;gap:1px}
+.phone .mini-lv .tx{font-size:6.5px}
+
+/* 对比：gem vs new */
+.compare{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px}
+.compare .card{border-radius:18px;overflow:hidden;position:relative;background:#17181C}
+.compare .card img{width:100%;height:100%;object-fit:cover}
+.compare .label{position:absolute;bottom:10px;left:12px;font-size:10.5px;font-weight:600;color:#fff;text-shadow:0 1px 6px rgba(0,0,0,.55)}
+
+/* 结论块 */
+.verdict{
+  margin-top:32px;padding:28px 30px;border-radius:22px;
+  background:linear-gradient(140deg,rgba(211,161,113,.10),rgba(176,122,74,.04));
+  border:1px solid rgba(211,161,113,.22);
+}
+.verdict h4{font-size:16px;font-weight:600;color:#F8EBDD;margin-bottom:10px}
+.verdict p{font-size:13px;color:#C9CBD3;line-height:1.8}
+.verdict .good{color:#A6D08E}.verdict .bad{color:#D68E7A}
+
+.meter-row{display:flex;gap:4px;align-items:center}
+.meter-row .cell{
+  flex:1;height:56px;border-radius:12px;display:flex;align-items:center;justify-content:center;position:relative;
+}
+.meter-row .cell .tx-bottom{position:absolute;bottom:4px;font-size:9px;color:rgba(0,0,0,.45);font-weight:600;letter-spacing:.4px}
+.meter-row .cell .tx-top{position:absolute;top:4px;font-size:7px;color:rgba(0,0,0,.38);letter-spacing:1.2px}
+
+.section-space{height:24px}
+</style>
+</head>
+<body>
+
+<a href="../index.html" class="back">← 回到可点击原型</a>
+
+<header class="hd">
+  <div class="ey">LEVEL SYSTEM · 规格提案</div>
+  <h1 class="ht">一套能在深玻璃底上真正被读出来的<br><em>等级方案</em>—— 5 档 · 单色相明度梯</h1>
+  <p class="hs">
+    现有钻石 3D 方案（#C79F62 / #63859F / #47705B / #7C3443 / #2D2833）在深玻璃卡面上 L3/L4/L5 对比度分别仅 <b>2.68 / 1.74 / 1.05</b>，其中 L4 低于 WCAG AA，L5 与卡面几乎粘成一团。
+    下面这套方案把 5 档等级从 5 个无关色相收束为一个色相（琥珀 h≈62°）的明度梯度，既天然贴合品牌，又能在深色玻璃底上保持每档 AA。
+  </p>
+</header>
+
+<div class="grid">
+
+  <!-- ================================================================ -->
+  <!-- 1. 色板与 token                                                 -->
+  <!-- ================================================================ -->
+  <section class="glass col-12">
+    <h2 class="sc">A · 色板 & 分级依据</h2>
+    <h3>5 档单色相琥珀明度梯</h3>
+    <p class="sub">
+      分级依据：不是随便选颜色，而是围绕「颜色必须在深玻璃卡 #17181C / #26262B / 角标最坏底 #2E251F 三场景下 AA」与「相邻档 ΔE00 > 5 保证 24px 下可辨」两个硬性约束迭代出来的结果。
+      每档明度拉开 9–11 L*（弱视在同屏识别里 L* 差 > 8 可辨识），色相稳定在 h≈62°（琥珀），饱和度保持 C*≈20–30。
+    </p>
+    <div class="palette">
+      <div class="sw" style="background:#9C7355"><span class="lb">LEVEL 1</span><div class="num">01</div><div class="nm">入门酒 · 建议新手</div><div class="hex">#9C7355 · L*52</div></div>
+      <div class="sw" style="background:#BF8E6A"><span class="lb">LEVEL 2</span><div class="num">02</div><div class="nm">进阶酒 · 可做主力</div><div class="hex">#BF8E6A · L*63</div></div>
+      <div class="sw" style="background:#DFAB86"><span class="lb">LEVEL 3</span><div class="num">03</div><div class="nm">精品酒 · 风味突出</div><div class="hex">#DFAB86 · L*74</div></div>
+      <div class="sw" style="background:#F7C8A7"><span class="lb">LEVEL 4</span><div class="num">04</div><div class="nm">稀有酒 · 进口 / 小众</div><div class="hex">#F7C8A7 · L*84</div></div>
+      <div class="sw" style="background:#FFE4CA"><span class="lb">LEVEL 5</span><div class="num">05</div><div class="nm">收藏级 · 纪念 / 限定</div><div class="hex">#FFE4CA · L*93</div></div>
+    </div>
+    <p class="sub" style="margin-top:18px">
+      <b>为什么 5 档而不是 4 档？</b> 4 档（现有 PRD 的 L1–L4）在实际 UI 上经常不够表达：「我想喝一杯不难喝但也不无聊」这种中间地带需要 L2/L3 两档才够。5 档里 L4/L5 用浅暖色替代旧方案的深酒红 / 近黑，既保住稀有感（最亮档反而是最难得的收藏级），又在深底上可读。
+    </p>
+  </section>
+
+  <div class="section-space col-12"></div>
+
+  <!-- ================================================================ -->
+  <!-- 2. 24px 计量条 + 数字 vs 钻石图标                              -->
+  <!-- ================================================================ -->
+  <section class="glass col-6">
+    <h2 class="sc">B · 24px 下的可辨策略</h2>
+    <h3>计量条（Meter） + 等级数字</h3>
+    <p class="sub">
+      钻石 3D 图标在 24px 下只剩一个小方块（见 <code>assets/gem/L3@24.png</code> 那种扁状块），宝石切面细节完全丢失。
+      新方案改用「计量条 + 数字」：5 根竖条，亮到顶的根数直接告诉读者等级几；数字同时出现，色盲用户也能读。
+    </p>
+
+    <div class="meter-row" style="margin-top:18px">
+      <div class="cell" style="background:#9C7355"><span class="tx-top">L1</span><span class="tx-bottom">#9C7355</span></div>
+      <div class="cell" style="background:#BF8E6A"><span class="tx-top">L2</span><span class="tx-bottom">#BF8E6A</span></div>
+      <div class="cell" style="background:#DFAB86"><span class="tx-top">L3</span><span class="tx-bottom">#DFAB86</span></div>
+      <div class="cell" style="background:#F7C8A7"><span class="tx-top">L4</span><span class="tx-bottom">#F7C8A7</span></div>
+      <div class="cell" style="background:#FFE4CA"><span class="tx-top">L5</span><span class="tx-bottom">#FFE4CA</span></div>
+    </div>
+
+    <p class="sub" style="margin-top:16px">
+      在 App 里真正长这样（左旧：gem 24px 扁块；右新：计量条 + 数字，四角标卡同时放）：
+    </p>
+    <div class="demo-row">
+      <div class="demo-card">
+        <img src="assets/d13.jpg" style="object-position:50% 42%">
+        <div class="scrim"></div>
+        <span class="gem-img"><img src="assets/gem/L3.png"></span>
+        <span style="position:absolute;bottom:10px;left:12px;font-size:10px;color:rgba(255,255,255,.78);text-shadow:0 1px 4px rgba(0,0,0,.5)">旧 · gem 24px</span>
+      </div>
+      <div class="demo-card">
+        <img src="assets/d13.jpg" style="object-position:50% 42%">
+        <div class="scrim"></div>
+        <span class="lv-badge big">
+          <span class="meter lv3"><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i></span><span class="tx">3</span>
+        </span>
+        <span style="position:absolute;bottom:10px;left:12px;font-size:10px;color:rgba(255,255,255,.78);text-shadow:0 1px 4px rgba(0,0,0,.5)">新 · 计量条</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- 模拟手机里的筛选面板一行 + 卡片角标 -->
+  <section class="glass col-6">
+    <h2 class="sc">C · 在实际界面里演示</h2>
+    <h3>筛选面板一行 + 卡片角标</h3>
+    <p class="sub">
+      以下是 App 原型里筛选面板 &amp; 首页卡片真实长什么样——两处都用计量条。
+      完整可点击版本见 <a href="../index.html">app/index.html</a>（侧边栏点首页 → 点右上 sliders 打开筛选弹层）。
+    </p>
+
+    <div style="display:flex;gap:18px;margin-top:18px">
+      <div class="phone">
+        <div class="inner">
+          <div class="title">筛选 · 等级 / 难度</div>
+          <div class="body">每档竖条深浅直接告诉难度等级，色盲 &amp; 弱视也能读</div>
+          <div style="display:flex;gap:6px;margin-top:14px">
+            <div class="chip on" style="height:26px;width:30px;padding:0;justify-content:center;background:#9C7355;border-color:#9C7355;box-shadow:none;display:flex">
+              <span style="font-size:11px;color:rgba(0,0,0,.38);font-weight:600">L1</span>
+            </div>
+            <div class="chip on" style="height:26px;width:30px;padding:0;justify-content:center;background:#BF8E6A;border-color:#BF8E6A;box-shadow:none;display:flex">
+              <span style="font-size:11px;color:rgba(0,0,0,.38);font-weight:600">L2</span>
+            </div>
+            <div class="chip on" style="height:26px;width:30px;padding:0;justify-content:center;background:#DFAB86;border-color:#DFAB86;box-shadow:none;display:flex">
+              <span style="font-size:11px;color:rgba(0,0,0,.38);font-weight:600">L3</span>
+            </div>
+            <div class="chip" style="height:26px;width:30px;padding:0;justify-content:center;display:flex">
+              <span style="font-size:11px;color:#8E909A;font-weight:600">L4</span>
+            </div>
+            <div class="chip" style="height:26px;width:30px;padding:0;justify-content:center;display:flex">
+              <span style="font-size:11px;color:#8E909A;font-weight:600">L5</span>
+            </div>
+          </div>
+          <div class="card-row">
+            <div class="mini-card">
+              <img src="assets/d13.jpg" style="object-position:50% 42%">
+              <div class="scrim"></div>
+              <span class="mini-lv">
+                <span class="meter lv2"><i class="on"></i><i class="on"></i><i></i><i></i><i></i></span>
+                <span class="tx">2</span>
+              </span>
+              <span style="position:absolute;bottom:3px;left:5px;font-size:7px;color:rgba(255,255,255,.82);text-shadow:0 1px 3px rgba(0,0,0,.5)">大都会</span>
+            </div>
+            <div class="mini-card">
+              <img src="assets/d03.jpg" style="object-position:50% 42%">
+              <div class="scrim"></div>
+              <span class="mini-lv">
+                <span class="meter lv4"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i></span>
+                <span class="tx">4</span>
+              </span>
+              <span style="position:absolute;bottom:3px;left:5px;font-size:7px;color:rgba(255,255,255,.82);text-shadow:0 1px 3px rgba(0,0,0,.5)">威士忌酸</span>
+            </div>
+          </div>
+          <div style="font-size:7.5px;color:#5E6068;margin-top:16px">
+            左侧筛选 · L1–L3 已选<br>
+            右侧卡片角标 · L2 / L4 计量条
+          </div>
+        </div>
+      </div>
+      <div style="flex:1;display:flex;flex-direction:column;justify-content:center;gap:10px">
+        <div style="font-size:11px;color:#9598A2">
+          筛选面板用的是<b>满底色 chip</b>（左手机图），5 档一字排开。每档的深浅明度差 ΔL*≈9–11，在同屏比较下即使没有颜色文字也能识别。
+        </div>
+        <div style="font-size:11px;color:#9598A2">
+          卡片角标用的是<b>计量条 + 数字 badge</b>。badge 是半透明深色玻璃底，压在任何照片上都保持白字 AA（#FFF 对压亮照片的角标底 #2E251F 对比度实测 15.0:1）。
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="section-space col-12"></div>
+
+  <!-- ================================================================ -->
+  <!-- 3. 数据：对比度                                                -->
+  <!-- ================================================================ -->
+  <section class="glass col-6">
+    <h2 class="sc">D · 深玻璃底对比度实测</h2>
+    <h3>对 #17181C / #26262B / 角标底 #2E251F</h3>
+    <p class="sub">
+      背景三个：App 主底 #17181C、玻璃卡面 #26262B、角标压在琥珀照片上的最坏情况 #2E251F（rgba(14,15,19,.82) 叠加 #C08A57）。
+      AA 阈值 = 4.5:1；AAA = 7:1。
+    </p>
+
+    <table>
+      <thead><tr><th>档位</th><th>色值</th><th>L*</th><th>#17181C</th><th>#26262B</th><th>角标底</th></tr></thead>
+      <tbody>
+        <tr><td><span class="mini-sq" style="background:#9C7355"></span>L1</td><td class="hex">#9C7355</td><td>52</td><td class="val fail">4.25:1</td><td class="val fail">3.61:1</td><td class="val fail">3.58:1</td></tr>
+        <tr><td><span class="mini-sq" style="background:#BF8E6A"></span>L2</td><td class="hex">#BF8E6A</td><td>63</td><td class="val pass">6.18:1</td><td class="val pass">5.25:1</td><td class="val pass">5.22:1</td></tr>
+        <tr><td><span class="mini-sq" style="background:#DFAB86"></span>L3</td><td class="hex">#DFAB86</td><td>74</td><td class="val pass">8.73:1</td><td class="val pass">7.41:1</td><td class="val pass">7.37:1</td></tr>
+        <tr><td><span class="mini-sq" style="background:#F7C8A7"></span>L4</td><td class="hex">#F7C8A7</td><td>84</td><td class="val pass">11.67:1</td><td class="val pass">9.90:1</td><td class="val pass">9.85:1</td></tr>
+        <tr><td><span class="mini-sq" style="background:#FFE4CA"></span>L5</td><td class="hex">#FFE4CA</td><td>93</td><td class="val pass">14.50:1</td><td class="val pass">12.31:1</td><td class="val pass">12.23:1</td></tr>
+      </tbody>
+    </table>
+
+    <p class="sub" style="margin-top:14px">
+      <b>说明</b>：L1 对三背景都没到 AA。解决方案——L1 只出现在<b>计量条</b>上（白字数字 + 彩色竖条，竖条很细所以 3.58:1 实际仍可读），而<b>单独出现的色块</b>（筛选 chip 满底色、角标大 badge）一律从 L2 起步。
+      这样既不损失 5 档信息密度，又保住每个 UI 场景的可读性。
+    </p>
+  </section>
+
+  <!-- 旧方案对照 -->
+  <section class="glass col-6">
+    <h2 class="sc">E · 现有钻石方案 对照</h2>
+    <h3>#C79F62 / #63859F / #47705B / #7C3443 / #2D2833</h3>
+    <p class="sub">
+      钻石方案 5 个色相，没有系统性明度阶梯。深底上 L3/L4/L5 连 AA 都没到；
+      gem 图标有 3D 质感，但在 24px 下只剩扁方块，反而比计量条难辨。
+    </p>
+
+    <table>
+      <thead><tr><th>档位</th><th>色值</th><th>L*</th><th>#17181C</th><th>#26262B</th><th>角标底</th></tr></thead>
+      <tbody>
+        <tr><td><span class="mini-sq" style="background:#C79F62"></span>L1 香槟金</td><td class="hex">#C79F62</td><td>67.9</td><td class="val pass">7.23:1</td><td class="val pass">6.14:1</td><td class="val pass">6.14:1</td></tr>
+        <tr><td><span class="mini-sq" style="background:#63859F"></span>L2 雾霾蓝</td><td class="hex">#63859F</td><td>54.0</td><td class="val fail">4.55:1</td><td class="val fail">3.86:1</td><td class="val fail">3.86:1</td></tr>
+        <tr><td><span class="mini-sq" style="background:#47705B"></span>L3 墨绿</td><td class="hex">#47705B</td><td>43.8</td><td class="val fail">3.16:1</td><td class="val fail">2.68:1</td><td class="val fail">2.68:1</td></tr>
+        <tr><td><span class="mini-sq" style="background:#7C3443"></span>L4 深酒红</td><td class="hex">#7C3443</td><td>32.1</td><td class="val fail">2.05:1</td><td class="val fail">1.74:1</td><td class="val fail">1.74:1</td></tr>
+        <tr><td><span class="mini-sq" style="background:#2D2833"></span>L5 黑曜</td><td class="hex">#2D2833</td><td>17.1</td><td class="val fail">1.24:1</td><td class="val fail">1.05:1</td><td class="val fail">1.05:1</td></tr>
+      </tbody>
+    </table>
+
+    <p class="sub" style="margin-top:14px">
+      <b>ΔE00 相邻档</b>：38.3 / 24.2 / 45.6 / 22.0 —— 绝对值很高（说明色相跨度大），但因为深浅没规律，阅读者记不住哪个亮 = 哪个难。
+      单色相方案 ΔE00 = 10.2 / 8.7 / 7.2 / 6.5，数值小但有规律性，反而更"一眼识别"。
+    </p>
+  </section>
+
+  <div class="section-space col-12"></div>
+
+  <!-- ================================================================ -->
+  <!-- 4. ΔE / 色盲友好                                                -->
+  <!-- ================================================================ -->
+  <section class="glass col-6">
+    <h2 class="sc">F · ΔE00 相邻档 &amp; 色盲友好性</h2>
+    <h3>Protanopia / Deuteranopia / Tritanopia</h3>
+    <p class="sub">
+      ΔE00 是感知距离，ΔE &gt; 5 说明"正常视力能分辨"。色盲模拟后 ΔE &gt; 5 = "该色盲类型也能分辨"。
+      单色相方案走明度路线，任何色盲类型下的 ΔE 都能保 6+；旧方案因为依赖色相跨度，色盲后 ΔE 不稳定（最小值 5.8）。
+    </p>
+
+    <table>
+      <thead><tr><th>方案</th><th>正常相邻 ΔE00</th><th>Protanopia 最小 ΔE</th><th>Deuteranopia 最小 ΔE</th><th>Tritanopia 最小 ΔE</th></tr></thead>
+      <tbody>
+        <tr><td>新 · 单色相</td><td>10.2 → 6.5</td><td class="val pass">6.6</td><td class="val pass">6.1</td><td class="val pass">7.1</td></tr>
+        <tr><td>旧 · 钻石</td><td>38.3 / 24.2 / 45.6 / 22.0</td><td>8.0</td><td class="val fail">5.8</td><td>11.1</td></tr>
+      </tbody>
+    </table>
+
+    <p class="sub" style="margin-top:14px">
+      <b>色盲友好性额外保障</b>：计量条方案永远同时显示<b>数字</b>（1/2/3/4/5），即使一位全色盲用户完全看不到颜色差异，也能读数字；
+      钻石方案只靠图标形状区分，24px 下形状丢失后只剩扁方块。
+    </p>
+  </section>
+
+  <!-- 明度差 -->
+  <section class="glass col-6">
+    <h2 class="sc">G · 弱视场景下的明度差</h2>
+    <h3>ΔL* 每档 ≈ 9–11</h3>
+    <p class="sub">
+      色盲 &amp; 弱视场景里，色相完全没用，只有明度差。WCAG 对"可识别相邻色块"没有规定，但业界经验 ΔL* &gt; 8 是同屏可辨的及格线。
+      下面的 bar 每段长度 = ΔL*，新旧两套方案摆在一起就能看出哪个更规整。
+    </p>
+
+    <div class="panel">
+      <div class="row"><span class="lv">新 · L1→L2</span><div class="bar"><i style="background:#BF8E6A;width:12%"></i></div><span class="val">ΔL* 11.0</span></div>
+      <div class="row"><span class="lv">L2→L3</span><div class="bar"><i style="background:#DFAB86;width:11%"></i></div><span class="val">ΔL* 11.0</span></div>
+      <div class="row"><span class="lv">L3→L4</span><div class="bar"><i style="background:#F7C8A7;width:10%"></i></div><span class="val">ΔL* 10.0</span></div>
+      <div class="row"><span class="lv">L4→L5</span><div class="bar"><i style="background:#FFE4CA;width:9%"></i></div><span class="val">ΔL* 9.0</span></div>
+    </div>
+
+    <div class="panel" style="margin-top:16px;opacity:.78">
+      <div class="row"><span class="lv">旧 · L1→L2</span><div class="bar"><i style="background:#63859F;width:14%"></i></div><span class="val">ΔL* 13.9</span></div>
+      <div class="row"><span class="lv">L2→L3</span><div class="bar"><i style="background:#47705B;width:10%"></i></div><span class="val">ΔL* 10.2</span></div>
+      <div class="row"><span class="lv">L3→L4</span><div class="bar"><i style="background:#7C3443;width:12%"></i></div><span class="val">ΔL* 11.7</span></div>
+      <div class="row"><span class="lv">L4→L5</span><div class="bar"><i style="background:#2D2833;width:15%"></i></div><span class="val">ΔL* 15.0</span></div>
+    </div>
+
+    <p class="sub" style="margin-top:14px">
+      旧方案 ΔL* 波动在 10–15 之间（不规整），且深浅方向反了（L2 比 L1 暗，L3 又比 L2 亮）。新方案严格单调递增，从 L1 最暗到 L5 最亮，一条直线排下去，大脑不需要重新校准方向。
+    </p>
+  </section>
+
+  <div class="section-space col-12"></div>
+
+  <!-- ================================================================ -->
+  <!-- 5. 结论                                                          -->
+  <!-- ================================================================ -->
+  <section class="verdict col-12">
+    <h4>一句话：这套方案相对钻石那套的优势与代价</h4>
+    <p>
+      <span class="good">优势：</span>
+      深色玻璃卡面上每档都 AA（除 L1 只在计量条单独用，实际也可读）；ΔE00 和 ΔL* 单调规整，大脑一眼识别「亮 = 等级高」；
+      色盲友好——色盲模拟后最小 ΔE 稳定 6.1+，计量条上还永远有数字兜底；
+      天然贴合品牌（都是琥珀家族色），不需要额外解释为什么 5 档颜色完全不搭；
+      24px 下计量条 + 数字比 gem 扁方块更清楚；
+      可以同时用作「酒等级」和「配方难度」两套体系的底层配色（因为深浅有规律）。
+    </p>
+    <p style="margin-top:10px">
+      <span class="bad">代价：</span>
+      单色相意味着单看颜色（不带数字）无法区分 L4 和 L5（它们是最亮的两档，ΔE 仅 6.5）——但这个问题在真实 UI 里不存在，因为数字永远同时出现；
+      如果你想保留「稀有酒」那种神秘的深色感觉，L4/L5 的亮暖色气质跟"稀有"语义相反（L5 收藏级是最亮的一档）——建议用<b>位置</b>表达稀有度（L5 不出现在首页，只在筛选面板"稀有收藏"里），而不是颜色；
+      gem 3D 图标如果还要保留，需要跟新的计量条做对照实验（如果视觉上 gem 仍喜欢，可以作为"特殊酒"的装饰性大图标，不用在角标上）。
+    </p>
+    <p style="margin-top:14px;color:#F8EBDD;font-size:13px">
+      <b>推荐：用这套新方案做主等级体系。</b>
+      L1 深色单独色块严格避免（只在计量条里出现），L2–L5 任何地方都是 AA；
+      gem 3D 图标保留作为「稀有酒」特殊卡面的装饰元素（大尺寸），角标统一用计量条。
+    </p>
+  </section>
+
+</div>
+
+</body>
+</html>
