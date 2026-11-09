@@ -215,6 +215,11 @@ img{display:block}
   background-image:linear-gradient(150deg,rgba(255,255,255,.18),rgba(255,255,255,.02) 50%,rgba(255,255,255,.08));
   border-color:rgba(255,255,255,.24);
 }
+/* 无底色图标钮：只留图标本身，保留 44×44 触达 */
+.icbtn.plain{
+  color:#fff;background:none;border:0;box-shadow:none;
+  -webkit-backdrop-filter:none;backdrop-filter:none;
+}
 
 /* 胶囊按钮 */
 .btn{
@@ -314,7 +319,7 @@ img{display:block}
   box-shadow:inset 0 0 0 1px rgba(255,255,255,.13),0 2px 8px rgba(0,0,0,.34);
 }
 .gem-badge .gem-tier{
-  height:16px;min-width:12px;padding:0 2px;border-radius:8px;
+  height:16px;min-width:17px;padding:0 2px;border-radius:8px;
   display:inline-flex;align-items:center;justify-content:center;
   font-size:10px;font-weight:600;color:#fff;letter-spacing:.3px;
   text-shadow:0 1px 2px rgba(0,0,0,.55);
@@ -328,8 +333,21 @@ img{display:block}
   box-shadow:inset 0 0 0 1px rgba(255,255,255,.12);
 }
 .gem-block .caption,.gem-block .gem-name{font-style:normal;color:var(--ink-400);line-height:1}
-.gem-flavor{display:inline-flex;align-items:center;gap:7px;flex:0 0 auto}
-.gem-flavor .caption{font-style:normal;color:var(--ink-400);line-height:1}
+/* 等级标识：钻石 + L2，全站统一；深底换 94% 实底 + 内环 */
+.lvl-badge{
+  display:inline-flex;align-items:center;gap:5px;height:28px;padding:0 9px 0 7px;border-radius:10px;
+  background:rgba(12,13,17,.84);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.14),0 1px 3px rgba(0,0,0,.32);
+}
+.lvl-badge.on-dark{
+  background:rgba(0,0,0,.94);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.13),0 1px 3px rgba(0,0,0,.32);
+}
+.lvl-badge b{
+  font-size:11.5px;font-weight:600;letter-spacing:.4px;line-height:1;
+  font-variant-numeric:tabular-nums;color:#F2DCC2;text-shadow:0 1px 2px rgba(0,0,0,.5);
+}
+.lvl-gem{display:block;flex:0 0 auto;color:var(--amber-lift)}
 .ph .gem-badge{position:absolute;top:9px;right:9px;z-index:6}
 .home-hero .gem-badge{position:absolute;top:10px;right:62px;z-index:6}
 

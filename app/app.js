@@ -104,19 +104,7 @@ function icbtn(icon, cls = '', size = 18, action = '', label = ''){
   return `<button class="icbtn ${cls}" ${attr} aria-label="${label || icon}">${ic(icon, size)}</button>`;
 }
 
-/* 等级计量条 */
-function lvMeter(level){
-  let out = '';
-  for (let i = 1; i <= 5; i++) out += `<i class="${i <= level ? 'on' : ''}"></i>`;
-  return `<span class="meter lv${level}">${out}</span><span class="tx">${level}</span>`;
-}
-function lvBadge(level, variant = 'normal'){
-  const cls = variant === 'sq' ? 'lv-badge sq' : variant === 'big' ? 'lv-badge big' : 'lv-badge';
-  return `<span class="${cls}">${lvMeter(level)}</span>`;
-}
-
 /* 风味钻石：每款配方一颗，由四维风味生成，不表达难度 */
-const TIERS = ['', '一阶', '二阶', '三阶', '四阶', '五阶'];
 
 /* v12 三档素材（1x/2x/3x），禁止由 1024 缩放 */
 function gemSet(id){
@@ -126,15 +114,44 @@ function gemSet(id){
 function gemImg(d, size = 24){
   return `<img src="assets/gem-v12/1x/flavor_${d.gem}.png" srcset="${gemSet(d.gem)}" width="${size}" height="${size}" alt="${d.name} 风味钻石">`;
 }
+/* 等级卡钻石三版对照：?gem=v1|v2|v3（默认 v3）
+   v1 24pt 整卡居中 · 与内容框间距 0
+   v2 28pt 底边与另两卡数值行同线 · 与内容框间距 0
+   v3 32pt 整卡垂直居中（上下间距相等） · 与内容框间距 4 */
+function gemVariant(){
+  const q = (location.search.match(/[?&]gem=(v[123])/) || [])[1];
+  const M = {
+    v1: { size: 24, align: 'center', gap: 0 },
+    v2: { size: 28, align: 'end',    gap: 0 },
+    v3: { size: 32, align: 'center', gap: 4 },
+  };
+  return M[q] || M.v3;
+}
+/* 等级钻石：只用 5x(120w) 档，最大 32pt 需 96px，120w 足够且不下采样到破图 */
+function gemLevel(d, cfg){
+  const p = 'assets/gem-v12';
+  const gap = cfg.gap > 0 ? `;margin-right:${cfg.gap}px` : '';
+  return `<img src="${p}/5x/flavor_${d.gem}.png" width="${cfg.size}" style="height:auto;align-self:${cfg.align}${gap}" alt="${d.name} 等级钻石">`;
+}
+/* 等级标识：统一「钻石 + L2」，不使用色条 */
+function gemGlyph(size = 14){
+  return `<svg class="lvl-gem" width="${size}" height="${size}" viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M7.4 3.6h9.2L21 9.4 12 20.6 3 9.4l4.4-5.8Z" fill="currentColor"/>
+    <path d="M3 9.4h18M7.4 3.6 12 9.4l-4.6 11.2M16.6 3.6 12 9.4l4.6 11.2" stroke="rgba(0,0,0,.30)" stroke-width="1.1" fill="none"/>
+  </svg>`;
+}
+function levelBadge(level, dark = false){
+  return `<span class="lvl-badge${dark ? ' on-dark' : ''}">${gemGlyph(14)}<b>L${level}</b></span>`;
+}
 function gemBadge(d, dark = false){
-  return `<span class="gem-badge${dark ? ' on-dark' : ''}"><span class="gem-tier num">${d.level}</span><span class="recipe-gem">${gemImg(d, 24)}</span></span>`;
+  return `<span class="gem-badge${dark ? ' on-dark' : ''}"><span class="gem-tier num">L${d.level}</span><span class="recipe-gem">${gemImg(d, 24)}</span></span>`;
 }
 /* 卡片来源标识：官方「盏 · 精编」或用户 DIY */
 function srcBadge(d){
   return d.diy ? `<span class="badge-diy">DIY</span>` : `<span class="badge-src">盏 · 精编</span>`;
 }
 function gemBlock(d, size = 24, withTier = false){
-  return `<span class="gem-block"><span class="recipe-gem">${gemImg(d, size)}</span>${withTier ? `<i class="gem-name">${TIERS[d.level]}</i>` : ''}</span>`;
+  return `<span class="gem-block"><span class="recipe-gem">${gemImg(d, size)}</span>${withTier ? `<i class="gem-name">L${d.level}</i>` : ''}</span>`;
 }
 
 /* ============================ 数据 ============================ */
@@ -305,7 +322,7 @@ function scrBottle(){
                   <div class="nm">${b.name}</div>
                   <div class="mt">${b.amt}</div>
                 </div>
-                <div class="rt">${lvBadge(b.level,'sq')}</div>
+                <div class="rt">${levelBadge(b.level)}</div>
               </button>
               ${i<arr.length-1?'<div class="divider"></div>':''}`).join('')}
           </div>`;
@@ -331,10 +348,6 @@ function scrBottleDetail(id){
               <div class="eyebrow">${b.fam}</div>
               <div class="h1 drink-name" style="margin-top:6px">${b.name}</div>
               <div class="small" style="margin-top:4px;color:rgba(255,255,255,.88)">${b.amt}</div>
-            </div>
-            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px">
-              ${lvBadge(b.level,'big')}
-              <div class="small">等级 ${b.level}/5</div>
             </div>
           </div>
           <div class="surface g20 r20" style="margin-top:18px;padding:14px 16px">
@@ -383,10 +396,11 @@ function scrRecipe(id){
     ['a5.jpg','阿 May 调酒记','3 天前','蛋清先干摇再摇和，口感会更绵。冰杯提前放冰箱 15 分钟，喝完最后一滴都不会淡。'],
     ['a2.jpg','居家微醺','1 周前','第一次做，蜂蜜替代糖浆太咸了，不如干脆放弃。'],
   ];
+  const gc = gemVariant();
   return frame(`
     <div class="screen">
       <div class="recipe-hero"><img src="assets/${d.img}" style="object-position:${d.pos}"><div class="veil"></div></div>
-      ${navbar('配方详情', true, `<span class="navact" aria-hidden="true">${ic('share',17)}</span><span class="navact" aria-hidden="true">${ic('heart',17)}</span>`)}
+      ${navbar('配方详情', true, `<span class="navact" aria-hidden="true">${ic('share',17)}</span>`)}
       <div style="position:relative;margin-top:-40px;z-index:5">
         <div class="pad">
           <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:14px">
@@ -394,19 +408,19 @@ function scrRecipe(id){
               <div class="drink-name" style="font-size:28px;line-height:1.16">${d.name}</div>
               <div class="small" style="margin-top:4px;color:rgba(255,255,255,.88)">${d.en} · ${d.fam} · ${d.meta}</div>
             </div>
+            ${icbtn('heart', 'plain', 19, '', '收藏')}
           </div>
           <div style="display:flex;gap:8px;margin-top:10px">
             ${d.tags.map(t=>`<span class="chip sm" style="height:24px;padding:0 9px;font-size:11px;border-radius:12px">${t}</span>`).join('')}
           </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-top:14px">
-            <div class="stat-tile surface"><span class="lb">难度等级</span><span class="vl">${lvMeter(d.level)}</span></div>
-            <div class="stat-tile surface"><span class="lb">用时</span><span class="vl">${ic('clock',14,'1.5')}5 分钟</span></div>
-            <div class="stat-tile surface"><span class="lb">口碑</span><span class="vl">${icf('star',13)}4.8<small style="color:var(--ink-300);font-weight:400">·312</small></span></div>
+          <div style="display:grid;grid-template-columns:120px 84px 120px;gap:12px;margin-top:14px">
+            <div class="stat-tile surface"><span class="lb">用时</span><span class="vl" style="margin-top:auto;font-size:18px;justify-content:flex-end">${ic('clock',16,'1.5')}5 分钟</span></div>
+            <div class="stat-tile surface" style="display:grid;grid-template-columns:1fr auto;padding-left:8px;padding-right:8px"><span class="lb" style="align-self:start">L${d.level}</span>${gemLevel(d, gc)}</div>
+            <div class="stat-tile surface"><span class="lb">口碑</span><span class="vl" style="margin-top:auto;font-size:18px;justify-content:center">${icf('star',14)}<span>4.8<small style="font-size:14px;color:var(--ink-400);font-weight:400;margin-left:2px">·312</small></span></span></div>
           </div>
           <div style="padding-top:18px">
             <div class="sec-head">
               <span class="h2">风味</span>
-              <span class="gem-flavor">${gemBlock(d,24)}<em class="caption">${TIERS[d.level]} · 难度</em></span>
             </div>
             <div style="display:flex;flex-direction:column;gap:6px">
               ${segbar('酸度',4)}${segbar('甜度',2)}${segbar('酒精感',3)}${segbar('圆润',2)}
@@ -469,7 +483,7 @@ function scrFlow(id){
           <div class="done-card">
             <div class="ring">${ic('glass',28)}</div>
             <div class="drink-name" style="font-size:22px;line-height:1.2">恭喜你调出了<br>${d.name}</div>
-            <div class="small" style="margin-top:8px;color:rgba(255,255,255,.85)">用了 ${lvMeter(d.level)} 级酒 · 4 步 · 5 分钟</div>
+            <div class="small" style="margin-top:8px;color:rgba(255,255,255,.85)">L${d.level} 难度 · 4 步 · 5 分钟</div>
             <div style="display:flex;gap:10px;margin-top:20px;justify-content:center">
               <button class="btn primary" data-goto="home">存到我的调酒</button>
               <button class="btn secondary" data-goto="chat">发一条到酒圈</button>
@@ -623,7 +637,7 @@ function scrMe(){
         <div style="flex:1;min-width:0">
           <div style="font-size:17px;font-weight:600;letter-spacing:-.3px">杯中物</div>
           <div class="caption" style="margin-top:4px">2026 年 8 月加入 · l***@163.com</div>
-          <div style="display:flex;gap:6px;margin-top:6px">${lvBadge(3,'big')}</div>
+          <div style="display:flex;gap:6px;margin-top:7px">${levelBadge(3)}</div>
         </div>
         ${icbtn('more','',17,'none','更多')}
       </div>
@@ -676,13 +690,9 @@ function filterSheet(){
   const srcSel = S.filters.src.length ? S.filters.src : ['全部'];
   const levelRow = [1,2,3,4,5].map(o=>{
     const on = levelSel.includes(o) ? 'on' : '';
-    const isL1 = o===1;
-    const bg = ['rgba(176,122,74,.10)','rgba(191,142,106,.18)','rgba(223,171,134,.22)','rgba(247,200,167,.22)','rgba(255,228,202,.22)'][o-1];
-    return `<button class="lvlopt ${on}" data-filter="level" data-v="${o}" style="background:${on?bg:''};border-color:${on?'rgba(211,161,113,.42)':'rgba(255,255,255,.09)'}">
-      <span class="meter lv${o}">
-        ${Array.from({length:5},(_,i)=>`<i class="${i<o?'on':''}" style="${on?'':'background:rgba(255,255,255,.22)'}"></i>`).join('')}
-      </span>
-      <span class="lb">L${o} / 5</span>
+    return `<button class="lvlopt ${on}" data-filter="level" data-v="${o}">
+      <span style="opacity:${on?1:.52};display:flex">${gemGlyph(18)}</span>
+      <span class="lb">L${o}</span>
     </button>`;
   }).join('');
   return `
@@ -705,7 +715,7 @@ function filterSheet(){
           <div class="frow"><div class="flb"><b>酒精强度</b><span>${strSel.length||'0'} 项</span></div>
             <div class="chips">${strs.map(f=>`<button class="chip ${strSel.includes(f)?'on':''}" data-filter="strength" data-v="${f}">${f}</button>`).join('')}</div>
           </div>
-          <div class="frow"><div class="flb"><b>等级 / 难度</b><span style="max-width:140px">深浅即等级，色盲友好</span></div>
+          <div class="frow"><div class="flb"><b>等级 / 难度</b><span style="max-width:140px">数字即等级 · 色盲友好</span></div>
             <div class="lvlrow">${levelRow}</div>
           </div>
           <div class="frow"><div class="flb"><b>来源</b><span>${srcSel[0]}</span></div>

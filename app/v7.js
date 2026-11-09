@@ -324,7 +324,7 @@ function scrSaved(){
         <div class="grid2" style="margin-top:14px">
           ${DRINKS.map(d=>`<button class="vcard surface" data-goto="recipe" data-arg="${d.id}">
             <div class="ph"><img src="assets/${d.img}" style="object-position:${d.pos}">${srcBadge(d)}${gemBadge(d)}</div>
-            <div class="ci"><div class="nm">${d.name}</div><div class="en">${d.en}</div><div class="mt">${d.fam} · ${TIERS[d.level]}</div></div>
+            <div class="ci"><div class="nm">${d.name}</div><div class="en">${d.en}</div><div class="mt">${d.fam} · L${d.level}</div></div>
           </button>`).join('')}
         </div>
       </div>
@@ -353,7 +353,7 @@ function scrPublish(){
           <div class="caption" style="margin:18px 0 7px">使用的配方</div>
           <div class="surface" style="border-radius:16px;padding:10px;display:flex;align-items:center;gap:11px">
             <span class="pick-thumb" style="width:44px;height:44px;border-radius:11px"><img src="assets/${d.img}" style="object-position:${d.pos}"></span>
-            <span style="flex:1;min-width:0"><span class="pick-name" style="font-size:15px">${d.name}</span><span class="pick-sub" style="display:block;margin-top:3px">${d.en} · ${TIERS[d.level]}</span></span>
+            <span style="flex:1;min-width:0"><span class="pick-name" style="font-size:15px">${d.name}</span><span class="pick-sub" style="display:block;margin-top:3px">${d.en} · L${d.level}</span></span>
             ${gemBadge(d)}
             <span class="linkbtn">换</span>
           </div>
@@ -456,7 +456,7 @@ function scrHistory(){
                   <span class="drink-name">${d.name}</span>
                   ${h.pub?'<span class="badge-pub">已发布</span>':''}
                 </div>
-                <div class="hist-mt num">${d.fam} · ${TIERS[d.level]} · ${d.meta.split(' · ')[0]}</div>
+                <div class="hist-mt num">${d.fam} · L${d.level} · ${d.meta.split(' · ')[0]}</div>
               </div>
               <button class="chip sm" style="flex:0 0 auto" data-goto="recipe" data-arg="${d.id}">再调一次</button>
             </div>`;
